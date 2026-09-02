@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لميناهالك | الشكاوي والاقتراحات</title>
+    <link rel="icon" href="./images/logo.png" type="image/jpeg" />
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background: #f1f6fa;
+      min-height: 100vh;
+      color: #1e2f40;
+    }
+
+    /* ===== سايدبار ===== */
+    .sidebar {
+      width: 270px;
+      background: linear-gradient(180deg, #1a3348, #0f2537);
+      color: #fff;
+      min-height: 100vh;
+      padding: 30px 18px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.08);
+      z-index: 100;
+    }
+
+    .sidebar .brand {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding-bottom: 18px;
+    }
+    .sidebar .brand i {
+      margin-left: 8px;
+      color: #7fb9f0;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: #e1edf7;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: 0.2s;
+      background: transparent;
+      cursor: pointer;
+    }
+    .nav-links a i {
+      width: 22px;
+      font-size: 18px;
+      color: #8bb4d9;
+    }
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateX(-4px);
+    }
+    .nav-links a.active-link {
+      background: rgba(255,255,255,0.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .nav-links a.active-link i {
+      color: #ffd966;
+    }
+
+    /* ===== المحتوى الرئيسي ===== */
+    .main {
+      margin-right: 270px;
+      flex: 1;
+      padding: 35px 40px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 28px;
+    }
+    .topbar h1 {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .topbar h1 i {
+      color: #2a6b9c;
+      margin-left: 8px;
+    }
+    .topbar .sub {
+      color: #5b6f82;
+      font-size: 14px;
+    }
+
+    /* ===== بطاقات الإحصائيات ===== */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px 20px;
+      border: 1px solid #e2eaf2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .stat-card .num {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a3f5c;
+    }
+    .stat-card .label {
+      color: #6b7f93;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* ===== فلتر ===== */
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 24px;
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 40px;
+      border: 1px solid #dce7f0;
+    }
+    .filter-row select,
+    .filter-row input {
+      padding: 10px 16px;
+      border-radius: 30px;
+      border: 1px solid #d0dde9;
+      background: #f7fafd;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1f3b55;
+      outline: none;
+      transition: 0.15s;
+    }
+    .filter-row select:focus,
+    .filter-row input:focus {
+      border-color: #3d7eb3;
+      box-shadow: 0 0 0 3px rgba(61, 126, 179, 0.15);
+    }
+    .filter-row select {
+      min-width: 170px;
+    }
+    .filter-row input {
+      flex: 1;
+      min-width: 180px;
+    }
+    .filter-row .badge-count {
+      background: #0f2c42;
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: auto;
+    }
+
+    /* ===== بطاقات الشكاوي والاقتراحات ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 22px;
+      margin-top: 6px;
+    }
+
+    .complaint-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 20px 20px 16px;
+      border: 1px solid #e5eef6;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      transition: 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .complaint-card:hover {
+      border-color: #b9d1e8;
+      box-shadow: 0 8px 20px rgba(0, 30, 60, 0.06);
+      transform: translateY(-3px);
+    }
+
+    .card-badge {
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 60px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      align-self: flex-start;
+    }
+    .badge-complaint {
+      background: #fee9e7;
+      color: #b34133;
+    }
+    .badge-suggestion {
+      background: #e0f0fa;
+      color: #1a6790;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0d2a44;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+      font-size: 0.9rem;
+      color: #2b4b6a;
+      background: #f6faff;
+      padding: 10px 14px;
+      border-radius: 18px;
+      margin-top: 4px;
+    }
+    .card-meta i {
+      width: 18px;
+      color: #4a7aab;
+    }
+    .card-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-footer {
+      display: flex;
+      justify-content: flex-end;
+      border-top: 1px dashed #dce6f0;
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+    .card-footer small {
+      color: #6f8aa8;
+      font-size: 0.75rem;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: #6f8aa8;
+      background: #f6faff;
+      border-radius: 48px;
+      border: 2px dashed #d3e0ee;
+    }
+    .empty-state i {
+      font-size: 2.8rem;
+      margin-bottom: 14px;
+      opacity: 0.5;
+    }
+
+    /* ===== نموذج الإضافة ===== */
+    .form-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 28px 32px;
+      border: 1px solid #e2eaf2;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 28px;
+    }
+    .form-grid .full-width {
+      grid-column: 1 / -1;
+    }
+    .form-group label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .form-group label i {
+      margin-left: 6px;
+      color: #2a6b9c;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      border: 1px solid #d4dfe9;
+      font-size: 15px;
+      background: white;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #3d7eb3;
+      box-shadow: 0 0 0 3px rgba(61, 126, 179, 0.12);
+      outline: none;
+    }
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 16px;
+      margin-top: 6px;
+    }
+    .btn {
+      padding: 12px 30px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-reset {
+      background: white;
+      border: 1px solid #cddae7;
+      color: #1f3b55;
+    }
+    .btn-reset:hover {
+      background: #f0f5fa;
+    }
+    .btn-primary {
+      background: #1a5fb4;
+      color: white;
+      box-shadow: 0 4px 12px rgba(26, 95, 180, 0.25);
+    }
+    .btn-primary:hover {
+      background: #0e4a92;
+      transform: scale(1.02);
+    }
+    .btn-delete {
+      background: #fef2f2;
+      color: #dc2626;
+      border: none;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 12px;
+      margin-right: auto;
+      transition: 0.15s;
+    }
+    .btn-delete:hover {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    .info-banner {
+      margin-top: 30px;
+      background: #f8fbfe;
+      border-radius: 20px;
+      padding: 14px 22px;
+      border: 1px solid #e2eaf2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .info-banner i {
+      color: #2a6b9c;
+      font-size: 20px;
+    }
+    .info-banner span {
+      color: #2d4b6b;
+    }
+
+    /* ===== modal تأكيد الحذف ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-box h3 { font-size: 18px; margin-bottom: 10px; }
+    .modal-box p { font-size: 14px; color: #4b637a; margin-bottom: 22px; line-height: 1.7; }
+    .modal-actions { display: flex; gap: 12px; }
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 40px;
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .modal-cancel { background: #edf2f7; color: #1f3b55; }
+    .modal-cancel:hover { background: #dce4ed; }
+    .modal-confirm { background: #dc2626; color: #fff; }
+    .modal-confirm:hover { background: #b91c1c; }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a3348;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 99999;
+      opacity: 0;
+      transition: 0.3s;
+      pointer-events: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: #b91c1c; }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(3px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 5px solid rgba(255,255,255,0.4);
+      border-top: 5px solid #1f3b55;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+        padding: 18px;
+      }
+      .main { margin-right: 0; padding: 20px; }
+      body { flex-direction: column; }
+      .filter-row { border-radius: 24px; padding: 14px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-actions { flex-direction: column; }
+      .form-actions .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== سايدبار ===== -->
+  <aside class="sidebar">
+    <div class="brand"><i class="fas fa-gavel"></i> لميناهالك</div>
+    <nav class="nav-links">
+      <a class="active-link" data-page="add">
+        <i class="fas fa-plus-circle"></i> إضافة شكوى / اقتراح
+      </a>
+      <a data-page="review">
+        <i class="fas fa-list-ul"></i> مراجعة الشكاوي والاقتراحات
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ===== المحتوى الرئيسي ===== -->
+  <main class="main" id="mainContent">
+    <!-- سيتم تبديل المحتوى ديناميكياً عبر JS -->
+  </main>
+
+  <!-- ===== Modal تأكيد الحذف ===== -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+      <h3><i class="fas fa-trash-alt" style="color:#b91c1c; margin-left:8px;"></i>تأكيد الحذف</h3>
+      <p id="confirmText">هل أنت متأكد من حذف هذا العنصر؟</p>
+      <div class="modal-actions">
+        <button class="modal-cancel" id="cancelDeleteBtn">إلغاء</button>
+        <button class="modal-confirm" id="confirmDeleteBtn">حذف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // =========== Firebase Config ===========
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+      authDomain: "nemo-8d0c7.firebaseapp.com",
+      projectId: "nemo-8d0c7",
+      storageBucket: "nemo-8d0c7.firebasestorage.app",
+      messagingSenderId: "585101385202",
+      appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ===== عناصر =====
+    const mainEl = document.getElementById('mainContent');
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmText = document.getElementById('confirmText');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const toastEl = document.getElementById('toast');
+
+    let allItems = [];
+    let currentFilter = 'الكل';
+    let pendingDeleteId = null;
+
+    // ===== دوال مساعدة =====
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '—';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' }) +
+             ' ' + d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showToast(msg, isError = false) {
+      toastEl.textContent = msg;
+      toastEl.className = 'toast show' + (isError ? ' error' : '');
+      setTimeout(() => { toastEl.className = 'toast'; }, 2800);
+    }
+
+    function showLoading(show = true) {
+      let loader = document.querySelector('.loading-overlay');
+      if (show) {
+        if (loader) return;
+        const div = document.createElement('div');
+        div.className = 'loading-overlay';
+        div.innerHTML = '<div class="spinner"></div>';
+        document.body.appendChild(div);
+      } else {
+        if (loader) loader.remove();
+      }
+    }
+
+    // ===== عرض صفحة "إضافة شكوى / اقتراح" =====
+    function renderAddPage() {
+      mainEl.innerHTML = `
+        <div class="topbar">
+          <div>
+            <h1><i class="fas fa-pen-fancy"></i> إضافة شكوى أو اقتراح</h1>
+            <div class="sub">أدخل بيانات الشكوى أو الاقتراح ثم اضغط إضافة</div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <form id="complaintForm">
+            <div class="form-grid">
+              <div class="full-width form-group">
+                <label><i class="fas fa-align-left"></i> نص الشكوى / الاقتراح</label>
+                <textarea id="contentInput" rows="3" placeholder="اكتب التفاصيل هنا..."></textarea>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-tag"></i> النوع</label>
+                <select id="typeSelect">
+                  <option value="شكوى">⚠️ شكوى</option>
+                  <option value="اقتراح">💡 اقتراح</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-user"></i> اسم المقترح / المشتكي</label>
+                <input type="text" id="nameInput" placeholder="مثال: أحمد محمد" />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-phone-alt"></i> رقم الهاتف</label>
+                <input type="text" id="phoneInput" placeholder="مثال: 01001234567" />
+              </div>
+              <div class="form-actions">
+                <button type="reset" class="btn btn-reset"><i class="fas fa-undo-alt"></i> إعادة تعيين</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> إضافة</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="info-banner">
+          <i class="fas fa-info-circle"></i>
+          <span>سيتم إضافة العنصر مباشرة إلى قاعدة البيانات، وستظهر في قسم "مراجعة الشكاوي والاقتراحات".</span>
+        </div>
+      `;
+
+      const form = document.getElementById('complaintForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleAddComplaint();
+      });
+    }
+
+    // ===== معالج إضافة شكوى/اقتراح =====
+    async function handleAddComplaint() {
+      const content = document.getElementById('contentInput').value.trim();
+      const type = document.getElementById('typeSelect').value;
+      const name = document.getElementById('nameInput').value.trim();
+      const phone = document.getElementById('phoneInput').value.trim();
+
+      if (!content || !name || !phone) {
+        showToast('يرجى ملء جميع الحقول (نص، اسم، ورقم الهاتف)', true);
+        return;
+      }
+
+      showLoading(true);
+      try {
+        await db.collection('complaints').add({
+          content,
+          type,
+          name,
+          phone,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('✅ تم إضافة الشكوى/الاقتراح بنجاح');
+        document.getElementById('contentInput').value = '';
+        document.getElementById('nameInput').value = '';
+        document.getElementById('phoneInput').value = '';
+      } catch (err) {
+        console.error(err);
+        showToast('❌ خطأ في الإضافة: ' + err.message, true);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ===== عرض صفحة "مراجعة الشكاوي والاقتراحات" =====
+    function renderReviewPage() {
+      mainEl.innerHTML = `
+        <div class="topbar">
+          <div>
+            <h1><i class="fas fa-list-ul"></i> مراجعة الشكاوي والاقتراحات</h1>
+            <div class="sub">جميع الشكاوي والاقتراحات المضافة، مع فلترة حسب النوع</div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <div class="num" id="totalCount">0</div>
+            <div class="label">إجمالي العناصر</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="complaintCount">0</div>
+            <div class="label">شكاوى</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="suggestionCount">0</div>
+            <div class="label">اقتراحات</div>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <select id="filterType">
+            <option value="الكل">الكل (شكوى + اقتراح)</option>
+            <option value="شكوى">شكوى فقط</option>
+            <option value="اقتراح">اقتراح فقط</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="🔍 بحث في النص أو الاسم..." />
+          <span class="badge-count" id="filteredCount">0</span>
+        </div>
+
+        <div id="cardsContainer" class="cards-grid">
+          <div class="empty-state"><i class="fas fa-inbox"></i><p>جارِ التحميل...</p></div>
+        </div>
+      `;
+
+      document.getElementById('filterType').addEventListener('change', (e) => {
+        currentFilter = e.target.value;
+        renderFilteredCards();
+      });
+      document.getElementById('searchInput').addEventListener('input', renderFilteredCards);
+
+      loadComplaintsFromFirestore();
+    }
+
+    // ===== تحميل الشكاوي من Firestore =====
+    async function loadComplaintsFromFirestore() {
+      showLoading(true);
+      try {
+        const snapshot = await db.collection('complaints')
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        allItems = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          allItems.push({
+            id: doc.id,
+            content: data.content || '',
+            type: data.type || 'شكوى',
+            name: data.name || '',
+            phone: data.phone || '',
+            createdAt: data.createdAt || null
+          });
+        });
+
+        renderFilteredCards();
+      } catch (err) {
+        console.error('خطأ في تحميل البيانات:', err);
+        showToast('❌ خطأ في التحميل: ' + err.message, true);
+        const container = document.getElementById('cardsContainer');
+        if (container) container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>حدث خطأ أثناء التحميل</p></div>`;
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ===== عرض البطاقات مع الفلترة =====
+    function renderFilteredCards() {
+      const filterType = document.getElementById('filterType')?.value || 'الكل';
+      const searchTerm = document.getElementById('searchInput')?.value.trim().toLowerCase() || '';
+
+      let filtered = allItems.filter(item => {
+        if (filterType !== 'الكل' && item.type !== filterType) return false;
+        if (searchTerm) {
+          const haystack = (item.content + ' ' + item.name + ' ' + item.phone).toLowerCase();
+          if (!haystack.includes(searchTerm)) return false;
+        }
+        return true;
+      });
+
+      const totalEl = document.getElementById('totalCount');
+      const compEl = document.getElementById('complaintCount');
+      const suggEl = document.getElementById('suggestionCount');
+      const filteredCountEl = document.getElementById('filteredCount');
+      if (totalEl) totalEl.textContent = allItems.length;
+      if (compEl) compEl.textContent = allItems.filter(i => i.type === 'شكوى').length;
+      if (suggEl) suggEl.textContent = allItems.filter(i => i.type === 'اقتراح').length;
+      if (filteredCountEl) filteredCountEl.textContent = filtered.length;
+
+      const container = document.getElementById('cardsContainer');
+      if (!container) return;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <p>${allItems.length === 0 ? 'لا توجد شكاوى أو اقتراحات مضافة بعد' : 'لا توجد نتائج تطابق الفلتر'}</p>
+            <small>${allItems.length === 0 ? 'أضف أول عنصر من قسم "إضافة شكوى / اقتراح"' : 'غيّر الفلتر أو البحث'}</small>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(item => {
+        const badgeClass = item.type === 'شكوى' ? 'badge-complaint' : 'badge-suggestion';
+        const icon = item.type === 'شكوى' ? 'fa-exclamation-triangle' : 'fa-lightbulb';
+        html += `
+          <div class="complaint-card" data-id="${item.id}">
+            <span class="card-badge ${badgeClass}"><i class="fas ${icon}"></i> ${item.type}</span>
+            <div class="card-title">${escapeHtml(item.content)}</div>
+            <div class="card-meta">
+              <span><i class="fas fa-user-circle"></i> ${escapeHtml(item.name)}</span>
+              <span><i class="fas fa-phone-alt"></i> ${escapeHtml(item.phone)}</span>
+            </div>
+            <div class="card-footer">
+              <small><i class="far fa-calendar-alt"></i> ${formatDate(item.createdAt)}</small>
+              <button class="btn-delete" onclick="askDelete('${item.id}', '${escapeHtml(item.content).replace(/'/g, "\\'")}')">
+                <i class="fas fa-trash-alt"></i> حذف
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // ===== حذف عنصر =====
+    window.askDelete = function(id, contentPreview) {
+      pendingDeleteId = id;
+      confirmText.textContent = `هل أنت متأكد من حذف: "${contentPreview.substring(0, 50)}${contentPreview.length > 50 ? '…' : ''}" ؟`;
+      confirmModal.classList.add('open');
+    };
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      pendingDeleteId = null;
+      confirmModal.classList.remove('open');
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!pendingDeleteId) return;
+      const idToDelete = pendingDeleteId;
+      confirmDeleteBtn.disabled = true;
+      confirmDeleteBtn.textContent = 'جاري الحذف...';
+
+      try {
+        await db.collection('complaints').doc(idToDelete).delete();
+        allItems = allItems.filter(item => item.id !== idToDelete);
+        renderFilteredCards();
+        showToast('✅ تم الحذف بنجاح');
+      } catch (err) {
+        console.error(err);
+        showToast('❌ خطأ في الحذف: ' + err.message, true);
+      } finally {
+        pendingDeleteId = null;
+        confirmModal.classList.remove('open');
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.textContent = 'حذف';
+      }
+    });
+
+    // ===== تبديل الصفحات عبر السايدبار =====
+    function switchPage(page) {
+      document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active-link'));
+      const targetLink = document.querySelector(`.nav-links a[data-page="${page}"]`);
+      if (targetLink) targetLink.classList.add('active-link');
+
+      if (page === 'add') {
+        renderAddPage();
+      } else if (page === 'review') {
+        renderReviewPage();
+      }
+    }
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = link.dataset.page;
+        if (page) switchPage(page);
+      });
+    });
+
+    // ===== تحميل الصفحة الافتراضية =====
+    renderAddPage();
+  </script>
+</body>
+</html>

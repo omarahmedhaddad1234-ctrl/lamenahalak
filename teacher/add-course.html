@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إضافة كورس جديد | لميناهالك</title>
+
+
+    <link rel="icon" href="./images/logo.png" type="image/jpeg" /><!-- Firebase SDK (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root{
+    --primary:#2c4b64;
+    --primary-dark:#1e3a4d;
+    --bg:#eef4f9;
+    --card:#ffffff;
+    --text:#1a2c3e;
+    --muted:#6b7280;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#e74c3c;
+    --border:#e2edf2;
+    --sidebar-w:270px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+  }
+
+  /* ===== Sidebar (نفس تصميم صفحة المدرس) ===== */
+  .sidebar{
+    width:var(--sidebar-w);
+    background:linear-gradient(180deg, var(--primary-dark), var(--primary));
+    color:#fff;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:30px 20px;
+    position:fixed;
+    right:0;
+    top:0;
+    bottom:0;
+  }
+  .profile-pic{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border:4px solid rgba(255,255,255,0.4);
+    margin-bottom:14px;
+  }
+  .profile-pic svg{
+    width:60px;
+    height:60px;
+    fill:#9ca3af;
+  }
+  .teacher-name{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:4px;
+    text-align:center;
+  }
+  .teacher-email{
+    font-size:12px;
+    color:rgba(255,255,255,0.75);
+    margin-bottom:30px;
+    text-align:center;
+    word-break:break-all;
+  }
+  .nav-links{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:auto;
+  }
+  .nav-links a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#fff;
+    text-decoration:none;
+    background:rgba(255,255,255,0.08);
+    padding:12px 16px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    transition:.2s;
+  }
+  .nav-links a:hover{
+    background:rgba(255,255,255,0.22);
+    transform:translateX(-4px);
+  }
+  .nav-links a.active{
+    background:rgba(255,255,255,0.28);
+  }
+  .nav-links a .icon{
+    font-size:18px;
+  }
+  .logout-btn{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.15);
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .logout-btn:hover{ background:rgba(255,255,255,0.3); }
+
+  /* ===== Main content ===== */
+  .main{
+    margin-right:var(--sidebar-w);
+    flex:1;
+    padding:35px 40px;
+  }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    gap:15px;
+  }
+  .topbar h1{
+    font-size:24px;
+  }
+  .back-link{
+    color:var(--primary);
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    border-bottom:1px dashed var(--primary);
+  }
+  .back-link:hover{ color:var(--primary-dark); }
+
+  /* ===== Form Card ===== */
+  .form-card{
+    max-width:650px;
+    background:var(--card);
+    border-radius:1.5rem;
+    padding:2rem 2.2rem 2.4rem 2.2rem;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+    border:1px solid var(--border);
+  }
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:1.1rem;
+  }
+  label{
+    font-size:13px;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:-0.6rem;
+  }
+  input, textarea{
+    width:100%;
+    padding:0.85rem 1.1rem;
+    font-size:1rem;
+    background:#ffffff;
+    border:1.5px solid var(--border);
+    border-radius:1rem;
+    outline:none;
+    transition:all 0.2s ease;
+    color:var(--text);
+    font-weight:500;
+    font-family:inherit;
+  }
+  textarea{
+    resize:vertical;
+    min-height:100px;
+  }
+  input::placeholder, textarea::placeholder{
+    color:#9bb7c9;
+    font-weight:400;
+    font-size:0.92rem;
+  }
+  input:focus, textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 6px 14px rgba(44,75,100,0.12);
+  }
+
+  .dates-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1rem;
+  }
+
+  .price-wrap{
+    position:relative;
+  }
+  .price-wrap span{
+    position:absolute;
+    left:1.1rem;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    font-size:0.85rem;
+    font-weight:700;
+  }
+
+  /* رفع صورة */
+  .image-upload{
+    border:2px dashed var(--border);
+    border-radius:1.2rem;
+    padding:1.2rem;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+    background:#f8fafc;
+    position:relative;
+    overflow:hidden;
+  }
+  .image-upload:hover{
+    border-color:var(--primary);
+    background:#eef4f9;
+  }
+  .image-upload input[type=file]{
+    display:none;
+  }
+  .image-upload .upload-icon{
+    font-size:2rem;
+    margin-bottom:6px;
+  }
+  .image-upload .upload-text{
+    font-size:0.85rem;
+    color:var(--muted);
+    font-weight:600;
+  }
+  #imagePreview{
+    max-width:100%;
+    max-height:220px;
+    border-radius:1rem;
+    margin-top:12px;
+    display:none;
+  }
+
+  button[type=submit]{
+    background:var(--primary);
+    color:white;
+    border:none;
+    padding:0.95rem;
+    font-size:1.05rem;
+    font-weight:700;
+    border-radius:2rem;
+    cursor:pointer;
+    transition:all 0.25s ease;
+    margin-top:0.6rem;
+    box-shadow:0 4px 8px rgba(0,0,0,0.05);
+  }
+  button[type=submit]:hover{
+    background:var(--primary-dark);
+    transform:scale(0.99);
+  }
+  button[type=submit]:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+  }
+
+  .validation-message{
+    font-size:0.75rem;
+    color:var(--danger);
+    margin-top:-0.7rem;
+    display:none;
+  }
+  .validation-message.show{ display:block; }
+
+  /* Alert */
+  .custom-alert{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:10000;
+    max-width:90%;
+    animation:fadeInScale 0.2s ease-out;
+  }
+  @keyframes fadeInScale{
+    from{ opacity:0; transform:translate(-50%,-50%) scale(0.9); }
+    to{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
+
+  .loading-overlay{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.3);
+    backdrop-filter:blur(3px);
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .spinner{
+    width:50px; height:50px;
+    border:5px solid rgba(255,255,255,0.5);
+    border-top:5px solid var(--primary);
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{ 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+
+  @media (max-width:768px){
+    .sidebar{
+      position:relative;
+      width:100%;
+      min-height:auto;
+    }
+    .main{ margin-right:0; padding:20px; }
+    body{ flex-direction:column; }
+    .dates-row{ grid-template-columns:1fr; }
+    .form-card{ padding:1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="profile-pic">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/></svg>
+    </div>
+    <div class="teacher-name" id="teacherName">جارِ التحميل...</div>
+    <div class="teacher-email" id="teacherEmail"></div>
+
+    <nav class="nav-links">
+      <a href="add-course.html">
+        <span class="icon">➕</span> إضافة كورس جديد
+      </a>
+      <a href="upload.html">
+        <span class="icon">📤</span> رفع محتوى
+      </a>
+      <a href="review.html">
+        <span class="icon">👥</span> متابعة الطلاب
+      </a>
+      <a href="active.html">
+        <span class="icon">👥</span>  تفعيل طلاب
+      </a>
+       <a href="home.html">
+        <span class="icon">👥</span>  الرئيسية
+      </a>
+    </nav>
+
+    <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+  </aside>
+
+  <!-- ===== Main Content ===== -->
+  <main class="main">
+    <div class="topbar">
+      <h1>إضافة كورس جديد</h1>
+    </div>
+
+    <div class="form-card">
+      <form id="addCourseForm">
+
+        <label for="courseTitle">اسم الكورس</label>
+        <input type="text" id="courseTitle" placeholder="مثال: مراجعة نهائية فيزياء" required>
+        <div class="validation-message" id="titleMsg"></div>
+
+        <label for="courseDescription">وصف الكورس</label>
+        <textarea id="courseDescription" placeholder="اكتب وصف مختصر عن محتوى الكورس وأهدافه..." required></textarea>
+        <div class="validation-message" id="descMsg"></div>
+
+        <label for="coursePrice">سعر الكورس</label>
+        <div class="price-wrap">
+          <input type="number" id="coursePrice" placeholder="0" min="0" step="0.01" required>
+          <span>جنيه</span>
+        </div>
+        <div class="validation-message" id="priceMsg"></div>
+
+        <label>صورة الكورس</label>
+        <div class="image-upload" id="imageUploadBox">
+          <input type="file" id="courseImage" accept="image/*">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">اضغط لاختيار صورة الكورس (JPG / PNG)</div>
+          <img id="imagePreview" alt="معاينة الصورة">
+        </div>
+        <div class="validation-message" id="imageMsg"></div>
+
+        <div class="dates-row">
+          <div>
+            <label for="startDate">معاد البدء</label>
+            <input type="date" id="startDate" required>
+          </div>
+          <div>
+            <label for="endDate">معاد الانتهاء</label>
+            <input type="date" id="endDate" required>
+          </div>
+        </div>
+        <div class="validation-message" id="datesMsg"></div>
+
+        <button type="submit" id="submitBtn">إضافة الكورس</button>
+      </form>
+    </div>
+  </main>
+
+<script>
+  // =========== Firebase Config (نفس مشروع nemo) ===========
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+    authDomain: "nemo-8d0c7.firebaseapp.com",
+    projectId: "nemo-8d0c7",
+    storageBucket: "nemo-8d0c7.firebasestorage.app",
+    messagingSenderId: "585101385202",
+    appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // =========== Cloudinary Config ===========
+  // حط بيانات حسابك هنا (Cloud Name و Upload Preset لازم يكون Unsigned)
+  const CLOUDINARY_CLOUD_NAME = "doaipcnvd";
+  const CLOUDINARY_UPLOAD_PRESET = "nemo_upload";
+  const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+  // مسار صفحة اللوجين (الملف ده متوقع يكون جوه فولدر teacher/)
+  const LOGIN_PAGE_PATH = "../index.html";
+
+  let currentTeacherId = null;
+  let selectedImageFile = null;
+
+  const teacherNameEl = document.getElementById('teacherName');
+  const teacherEmailEl = document.getElementById('teacherEmail');
+
+  function showLoading(show = true) {
+    let loader = document.querySelector('.loading-overlay');
+    if (show) {
+      if (loader) return;
+      const div = document.createElement('div');
+      div.className = 'loading-overlay';
+      div.innerHTML = '<div class="spinner"></div>';
+      document.body.appendChild(div);
+    } else {
+      if (loader) loader.remove();
+    }
+  }
+
+  function showCustomAlert(icon, title, message, callback) {
+    const oldAlert = document.querySelector(".custom-alert");
+    if (oldAlert) oldAlert.remove();
+
+    let bgColor, iconEmoji;
+    if (icon === "success") { bgColor = "linear-gradient(135deg, #2c4b64, #1e3a4d)"; iconEmoji = "✅"; }
+    else if (icon === "warning") { bgColor = "linear-gradient(135deg, #f39c12, #e67e22)"; iconEmoji = "⚠️"; }
+    else if (icon === "error") { bgColor = "linear-gradient(135deg, #e74c3c, #c0392b)"; iconEmoji = "❌"; }
+    else { bgColor = "#2c4b64"; iconEmoji = "ℹ️"; }
+
+    const alertDiv = document.createElement("div");
+    alertDiv.className = "custom-alert";
+    alertDiv.innerHTML = `
+      <div style="background:${bgColor}; direction:rtl; text-align:center; padding:1rem 1.5rem; border-radius:1.2rem; color:white; box-shadow:0 20px 35px -10px rgba(0,0,0,0.2); min-width:280px;">
+        <div style="font-size:2rem; margin-bottom:6px;">${iconEmoji}</div>
+        <h3 style="margin:0 0 8px 0; font-weight:600;">${title}</h3>
+        <p style="margin:0; font-size:0.85rem; opacity:0.95; white-space:pre-wrap;">${message}</p>
+        <div style="margin-top:12px;"><button class="alert-close-btn" style="background:rgba(255,255,255,0.2); border:none; padding:5px 14px; border-radius:50px; color:white; cursor:pointer; font-weight:500;">حسنًا</button></div>
+      </div>
+    `;
+    document.body.appendChild(alertDiv);
+    alertDiv.querySelector(".alert-close-btn").addEventListener("click", () => {
+      alertDiv.remove();
+      if (callback) callback();
+    });
+  }
+
+  function showMsg(el, msg){ if(el){ el.textContent = msg; el.classList.add('show'); } }
+  function hideMsg(el){ if(el) el.classList.remove('show'); }
+
+  // ===== رفع الصورة على Cloudinary =====
+  async function uploadImageToCloudinary(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData?.error?.message || "فشل رفع الصورة على Cloudinary");
+    }
+
+    const data = await response.json();
+    return data.secure_url; // رابط الصورة النهائي
+  }
+
+  // ===== مراقبة تسجيل الدخول والتأكد إنه مدرس =====
+  showLoading(true);
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      window.location.href = LOGIN_PAGE_PATH;
+      return;
+    }
+    try {
+      const userDoc = await db.collection("users").doc(user.uid).get();
+      if (!userDoc.exists || userDoc.data().role !== "teacher") {
+        showLoading(false);
+        window.location.href = LOGIN_PAGE_PATH;
+        return;
+      }
+      const userData = userDoc.data();
+      currentTeacherId = user.uid;
+      teacherNameEl.textContent = userData.name || "المدرس";
+      teacherEmailEl.textContent = userData.email || user.email || "";
+      showLoading(false);
+    } catch (err) {
+      console.error(err);
+      showLoading(false);
+      showCustomAlert("error", "خطأ", "حصل خطأ أثناء التحقق من الحساب: " + err.message);
+    }
+  });
+
+  // ===== اختيار ومعاينة الصورة =====
+  const imageUploadBox = document.getElementById('imageUploadBox');
+  const courseImageInput = document.getElementById('courseImage');
+  const imagePreview = document.getElementById('imagePreview');
+  const uploadIcon = imageUploadBox.querySelector('.upload-icon');
+  const uploadText = imageUploadBox.querySelector('.upload-text');
+
+  imageUploadBox.addEventListener('click', () => courseImageInput.click());
+
+  courseImageInput.addEventListener('change', () => {
+    const file = courseImageInput.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showMsg(document.getElementById('imageMsg'), 'من فضلك اختر ملف صورة صحيح');
+      return;
+    }
+
+    selectedImageFile = file;
+    hideMsg(document.getElementById('imageMsg'));
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.src = e.target.result;
+      imagePreview.style.display = 'block';
+      uploadIcon.style.display = 'none';
+      uploadText.textContent = 'اضغط لتغيير الصورة';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ===== إرسال الفورم =====
+  const form = document.getElementById('addCourseForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('courseTitle').value.trim();
+    const description = document.getElementById('courseDescription').value.trim();
+    const price = parseFloat(document.getElementById('coursePrice').value);
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    let hasError = false;
+
+    if (!title || title.length < 3) {
+      showMsg(document.getElementById('titleMsg'), 'اسم الكورس لازم يكون 3 أحرف على الأقل');
+      hasError = true;
+    } else {
+      hideMsg(document.getElementById('titleMsg'));
+    }
+
+    if (!description || description.length < 10) {
+      showMsg(document.getElementById('descMsg'), 'وصف الكورس لازم يكون 10 أحرف على الأقل');
+      hasError = true;
+    } else {
+      hideMsg(document.getElementById('descMsg'));
+    }
+
+    if (isNaN(price) || price < 0) {
+      showMsg(document.getElementById('priceMsg'), 'من فضلك أدخل سعر صحيح');
+      hasError = true;
+    } else {
+      hideMsg(document.getElementById('priceMsg'));
+    }
+
+    if (!startDate || !endDate) {
+      showMsg(document.getElementById('datesMsg'), 'من فضلك حدد معاد البدء ومعاد الانتهاء');
+      hasError = true;
+    } else if (new Date(endDate) < new Date(startDate)) {
+      showMsg(document.getElementById('datesMsg'), 'معاد الانتهاء لازم يكون بعد معاد البدء');
+      hasError = true;
+    } else {
+      hideMsg(document.getElementById('datesMsg'));
+    }
+
+    if (!currentTeacherId) {
+      showCustomAlert("error", "خطأ", "لم يتم التحقق من حسابك بعد، حاول تاني بعد لحظات.");
+      return;
+    }
+
+    if (hasError) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "جارِ الإضافة...";
+    showLoading(true);
+
+    try {
+      let imageUrl = "";
+
+      // رفع الصورة على Cloudinary لو المدرس اختار واحدة
+      if (selectedImageFile) {
+        imageUrl = await uploadImageToCloudinary(selectedImageFile);
+      }
+
+      const courseData = {
+        title: title,
+        description: description,
+        price: price,
+        imageUrl: imageUrl,
+        startDate: startDate,
+        endDate: endDate,
+        teacherId: currentTeacherId,
+        totalLessons: 0,
+        completedLessons: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      await db.collection("courses").add(courseData);
+
+      showLoading(false);
+      showCustomAlert("success", "تم بنجاح 🎉", "تمت إضافة الكورس بنجاح", () => {
+        window.location.href = "home.html";
+      });
+
+    } catch (err) {
+      console.error("خطأ في إضافة الكورس:", err);
+      showLoading(false);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "إضافة الكورس";
+      showCustomAlert("error", "فشل", "حصل خطأ أثناء إضافة الكورس: " + err.message);
+    }
+  });
+
+  // ===== تسجيل الخروج =====
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    auth.signOut().then(() => {
+      sessionStorage.removeItem("loggedInUser");
+      window.location.href = LOGIN_PAGE_PATH;
+    });
+  });
+</script>
+
+</body>
+</html>

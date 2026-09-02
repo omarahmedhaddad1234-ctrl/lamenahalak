@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم المدرس | لميناهالك</title>
+
+
+    <link rel="icon" href="./images/logo.png" type="image/jpeg" /><!-- Firebase SDK (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root{
+    --primary:#2c4b64;
+    --primary-dark:#1e3a4d;
+    --bg:#eef4f9;
+    --card:#ffffff;
+    --text:#1a2c3e;
+    --muted:#6b7280;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --border:#e2edf2;
+    --sidebar-w:270px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar{
+    width:var(--sidebar-w);
+    background:linear-gradient(180deg, var(--primary-dark), var(--primary));
+    color:#fff;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:30px 20px;
+    position:fixed;
+    right:0;
+    top:0;
+    bottom:0;
+  }
+  .profile-pic{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border:4px solid rgba(255,255,255,0.4);
+    margin-bottom:14px;
+  }
+  .profile-pic svg{
+    width:60px;
+    height:60px;
+    fill:#9ca3af;
+  }
+  .teacher-name{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:4px;
+    text-align:center;
+  }
+  .teacher-email{
+    font-size:12px;
+    color:rgba(255,255,255,0.75);
+    margin-bottom:30px;
+    text-align:center;
+    word-break:break-all;
+  }
+  .nav-links{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:auto;
+  }
+  .nav-links a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#fff;
+    text-decoration:none;
+    background:rgba(255,255,255,0.08);
+    padding:12px 16px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    transition:.2s;
+  }
+  .nav-links a:hover{
+    background:rgba(255,255,255,0.22);
+    transform:translateX(-4px);
+  }
+  .nav-links a .icon{
+    font-size:18px;
+  }
+  .logout-btn{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.15);
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .logout-btn:hover{ background:rgba(255,255,255,0.3); }
+
+  /* ===== Main content ===== */
+  .main{
+    margin-right:var(--sidebar-w);
+    flex:1;
+    padding:35px 40px;
+  }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    gap:15px;
+  }
+  .topbar h1{
+    font-size:24px;
+  }
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:18px;
+    margin-bottom:35px;
+  }
+  .stat-card{
+    background:var(--card);
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    border:1px solid var(--border);
+  }
+  .stat-card .num{
+    font-size:28px;
+    font-weight:800;
+    color:var(--primary);
+  }
+  .stat-card .label{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:4px;
+  }
+
+  .section-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .add-course-btn{
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    padding:9px 16px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+  }
+  .add-course-btn:hover{ background:var(--primary-dark); }
+
+  .courses-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+    gap:20px;
+    margin-bottom:20px;
+  }
+  .course-card{
+    background:var(--card);
+    border-radius:14px;
+    padding:20px;
+    border:1px solid var(--border);
+    box-shadow:0 2px 10px rgba(0,0,0,0.04);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .course-card h3{
+    font-size:16px;
+  }
+  .course-card p{
+    font-size:13px;
+    color:var(--muted);
+    min-height:32px;
+  }
+  .progress-bar{
+    width:100%;
+    height:8px;
+    background:#e5e7eb;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progress-bar span{
+    display:block;
+    height:100%;
+    background:var(--primary);
+  }
+  .status-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12px;
+  }
+  .badge{
+    padding:4px 10px;
+    border-radius:20px;
+    font-weight:700;
+    font-size:11px;
+  }
+  .badge.done{ background:#dcfce7; color:var(--success); }
+  .badge.progress{ background:#fef3c7; color:var(--warning); }
+  .card-actions{
+    display:flex;
+    gap:8px;
+    margin-top:6px;
+  }
+  .card-actions a{
+    flex:1;
+    text-align:center;
+    padding:8px;
+    border-radius:8px;
+    font-size:12px;
+    font-weight:700;
+    text-decoration:none;
+  }
+  .btn-upload{ background:#eef2ff; color:var(--primary); }
+  .btn-review{ background:#f0fdf4; color:var(--success); }
+
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--muted);
+    background:var(--card);
+    border-radius:14px;
+    border:1px dashed var(--border);
+  }
+  .loading{
+    text-align:center;
+    padding:40px;
+    color:var(--muted);
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .spinner {
+    width: 50px; height: 50px;
+    border: 5px solid rgba(255,255,255,0.5);
+    border-top: 5px solid #2c4b64;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  @media (max-width:768px){
+    .sidebar{
+      position:relative;
+      width:100%;
+      min-height:auto;
+    }
+    .main{ margin-right:0; padding:20px; }
+    body{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="profile-pic">
+      <!-- صورة بروفايل افتراضية (بدون صورة حقيقية) -->
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/></svg>
+    </div>
+    <div class="teacher-name" id="teacherName">جارِ التحميل...</div>
+    <div class="teacher-email" id="teacherEmail"></div>
+
+    <nav class="nav-links">
+      <a href="add-course.html">
+        <span class="icon">➕</span> إضافة كورس جديد
+      </a>
+      <a href="upload.html">
+        <span class="icon">📤</span> رفع محتوى
+      </a>
+      <a href="review.html">
+        <span class="icon">👥</span> متابعة الطلاب
+      </a>
+      <a href="active.html">
+        <span class="icon">👥</span>  تفعيل طلاب
+      </a>
+       <a href="home.html">
+        <span class="icon">👥</span>  الرئيسية
+      </a>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+  </aside>
+
+  <!-- ===== Main Content ===== -->
+  <main class="main">
+    <div class="topbar">
+      <h1>مرحباً بك في لوحة التحكم</h1>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="num" id="totalCourses">0</div>
+        <div class="label">إجمالي الكورسات</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" id="doneCourses">0</div>
+        <div class="label">كورسات مكتملة</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" id="progressCourses">0</div>
+        <div class="label">كورسات لسه شغالة عليها</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      كورساتي
+      <a href="add-course.html" class="add-course-btn">+ كورس جديد</a>
+    </div>
+
+    <div id="coursesContainer" class="courses-grid">
+      <div class="loading">جارِ تحميل الكورسات...</div>
+    </div>
+  </main>
+
+<script>
+  // =========== Firebase Config (نفس مشروع nemo) ===========
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+    authDomain: "nemo-8d0c7.firebaseapp.com",
+    projectId: "nemo-8d0c7",
+    storageBucket: "nemo-8d0c7.firebasestorage.app",
+    messagingSenderId: "585101385202",
+    appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // ===== المسار النسبي لصفحة تسجيل الدخول =====
+  // الملف ده متوقع إنه هيتحط جوه فولدر اسمه teacher/ (زي ما كود اللوجين بيحوّل لـ "teacher/home.html")
+  // فلو صفحة اللوجين في الجذر الرئيسي، المسار هنا هيبقى "../index.html"
+  const LOGIN_PAGE_PATH = "../index.html";
+
+  const teacherNameEl = document.getElementById('teacherName');
+  const teacherEmailEl = document.getElementById('teacherEmail');
+  const coursesContainer = document.getElementById('coursesContainer');
+  const totalCoursesEl = document.getElementById('totalCourses');
+  const doneCoursesEl = document.getElementById('doneCourses');
+  const progressCoursesEl = document.getElementById('progressCourses');
+
+  function showLoading(show = true) {
+    let loader = document.querySelector('.loading-overlay');
+    if (show) {
+      if (loader) return;
+      const div = document.createElement('div');
+      div.className = 'loading-overlay';
+      div.innerHTML = '<div class="spinner"></div>';
+      document.body.appendChild(div);
+    } else {
+      if (loader) loader.remove();
+    }
+  }
+
+  // ===== مراقبة حالة تسجيل الدخول =====
+  showLoading(true);
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      // مش مسجل دخول خالص
+      window.location.href = LOGIN_PAGE_PATH;
+      return;
+    }
+
+    try {
+      // نفس الـ collection المستخدمة في صفحة التسجيل: "users"
+      const userDoc = await db.collection("users").doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        showLoading(false);
+        window.location.href = LOGIN_PAGE_PATH;
+        return;
+      }
+
+      const userData = userDoc.data();
+
+      // لو الحساب مش "مدرس" منسمحش له يدخل الصفحة دي
+      if (userData.role !== "teacher") {
+        showLoading(false);
+        window.location.href = LOGIN_PAGE_PATH;
+        return;
+      }
+
+      teacherNameEl.textContent = userData.name || "المدرس";
+      teacherEmailEl.textContent = userData.email || user.email || "";
+
+      await loadCourses(user.uid);
+      showLoading(false);
+
+    } catch (err) {
+      console.error("خطأ في تحميل بيانات المدرس:", err);
+      showLoading(false);
+      coursesContainer.innerHTML = `<div class="empty-state">حصل خطأ: ${err.message}</div>`;
+    }
+  });
+
+  // ===== تحميل الكورسات الخاصة بالمدرس =====
+  async function loadCourses(teacherId) {
+    try {
+      const snapshot = await db.collection("courses")
+        .where("teacherId", "==", teacherId)
+        .get();
+
+      if (snapshot.empty) {
+        coursesContainer.innerHTML = `
+          <div class="empty-state">
+            لسه معملتش أي كورس. ابدأ دلوقتي!<br><br>
+            <a href="add-course.html" class="add-course-btn">إضافة كورس جديد</a>
+          </div>`;
+        updateStats(0, 0, 0);
+        return;
+      }
+
+      let coursesHTML = "";
+      let total = 0, done = 0, inProgress = 0;
+
+      snapshot.forEach((doc) => {
+        const course = doc.data();
+        const courseId = doc.id;
+
+        const totalLessons = course.totalLessons || 0;
+        const completedLessons = course.completedLessons || 0;
+        const percent = totalLessons > 0
+          ? Math.round((completedLessons / totalLessons) * 100)
+          : 0;
+        const isDone = percent >= 100;
+
+        total++;
+        if (isDone) done++; else inProgress++;
+
+        coursesHTML += `
+          <div class="course-card">
+            <h3>${escapeHtml(course.title || "بدون اسم")}</h3>
+            <p>${escapeHtml(course.description || "لا يوجد وصف")}</p>
+            <div class="progress-bar">
+              <span style="width:${percent}%"></span>
+            </div>
+            <div class="status-row">
+              <span>${completedLessons} من ${totalLessons} درس</span>
+              <span class="badge ${isDone ? 'done' : 'progress'}">
+                ${isDone ? 'مكتمل ✅' : 'لسه شغال عليه ⏳'}
+              </span>
+            </div>
+            <div class="card-actions">
+              <a class="btn-upload" href="upload.html?courseId=${courseId}">رفع محتوى</a>
+              <a class="btn-review" href="review.html?courseId=${courseId}">متابعة الطلاب</a>
+            </div>
+          </div>
+        `;
+      });
+
+      coursesContainer.innerHTML = coursesHTML;
+      updateStats(total, done, inProgress);
+
+    } catch (err) {
+      coursesContainer.innerHTML = `<div class="empty-state">حصل خطأ في تحميل الكورسات: ${err.message}</div>`;
+    }
+  }
+
+  function updateStats(total, done, inProgress) {
+    totalCoursesEl.textContent = total;
+    doneCoursesEl.textContent = done;
+    progressCoursesEl.textContent = inProgress;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ===== تسجيل الخروج =====
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    auth.signOut().then(() => {
+      sessionStorage.removeItem("loggedInUser");
+      window.location.href = LOGIN_PAGE_PATH;
+    });
+  });
+</script>
+
+</body>
+</html>

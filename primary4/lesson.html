@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>الرابعالابتدائي  | لميناهالك</title>
+    <link rel="icon" href="./images/logo.png" type="image/jpeg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root{
+            --primary:#3062e3;
+            --primary-dark:#1f45b0;
+            --accent:#ffb347;
+            --bg:#f4f7fe;
+            --card:#ffffff;
+            --text:#12203f;
+            --muted:#6b84a8;
+            --border:#e6ecf7;
+            --success:#22b573;
+            --dark-overlay:rgba(0,0,0,0.85);
+        }
+        *{ margin:0; padding:0; box-sizing:border-box; }
+        body{
+            font-family:'Tajawal','Segoe UI',sans-serif;
+            background:var(--bg);
+            color:var(--text);
+            min-height:100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .app-header{
+            background:linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding:16px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            position:sticky;
+            top:0;
+            z-index:100;
+            box-shadow:0 6px 24px rgba(48,98,227,0.25);
+        }
+        .app-header .logo{
+            color:#fff;
+            font-size:1.5rem;
+            font-weight:800;
+            text-decoration:none;
+        }
+        .app-header .logo span{ color:var(--accent); }
+        .app-header .header-actions{
+            display:flex;
+            align-items:center;
+            gap:20px;
+        }
+        .app-header .header-actions .user-name{
+            color:#cfe0ff;
+            font-weight:500;
+            font-size:0.9rem;
+        }
+        .app-header .header-actions .back-btn{
+            color:#fff;
+            background:rgba(255,255,255,0.12);
+            border:1px solid rgba(255,255,255,0.18);
+            padding:8px 20px;
+            border-radius:40px;
+            text-decoration:none;
+            font-weight:600;
+            transition:0.3s;
+            font-size:0.85rem;
+            cursor:pointer;
+        }
+        .app-header .header-actions .back-btn:hover{ background:rgba(255,255,255,0.22); }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-content{
+            max-width:1180px;
+            margin:0 auto;
+            padding:32px 20px 70px;
+        }
+
+        .layout{
+            display:grid;
+            grid-template-columns:1fr 360px;
+            gap:30px;
+            align-items:start;
+        }
+
+        /* ===== HERO / BANNER ===== */
+        .course-hero{
+            background:#fff;
+            border-radius:28px;
+            overflow:hidden;
+            box-shadow:0 10px 40px rgba(18,32,63,0.06);
+            border:1px solid var(--border);
+            margin-bottom:26px;
+        }
+        .course-hero .hero-img{
+            width:100%;
+            height:280px;
+            background:linear-gradient(145deg, #e9f0ff, #dbe6ff);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:5rem;
+            color:var(--primary);
+            position:relative;
+            overflow:hidden;
+        }
+        .course-hero .hero-img img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        .course-hero .hero-img .price-chip{
+            position:absolute;
+            top:18px;
+            left:18px;
+            background:var(--accent);
+            color:#12203f;
+            font-weight:800;
+            padding:8px 20px;
+            border-radius:40px;
+            font-size:0.95rem;
+            box-shadow:0 6px 18px rgba(255,179,71,0.4);
+        }
+        .course-hero .hero-body{
+            padding:26px 30px 30px;
+        }
+        .course-hero .hero-body .badge{
+            display:inline-block;
+            background:#e9efff;
+            color:var(--primary);
+            padding:5px 16px;
+            border-radius:40px;
+            font-size:0.75rem;
+            font-weight:700;
+            margin-bottom:12px;
+        }
+        .course-hero .hero-body h1{
+            font-size:1.9rem;
+            font-weight:800;
+            margin-bottom:10px;
+            color:var(--text);
+        }
+        .course-hero .hero-body .teacher-row{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            color:var(--muted);
+            font-size:0.95rem;
+            margin-bottom:16px;
+        }
+        .course-hero .hero-body .teacher-row .t-avatar{
+            width:34px; height:34px;
+            border-radius:50%;
+            background:var(--primary);
+            color:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:0.9rem;
+            font-weight:700;
+        }
+        .course-hero .hero-body .description{
+            color:#3d5578;
+            line-height:1.8;
+            font-size:0.98rem;
+            margin-bottom:20px;
+        }
+        .course-hero .hero-body .stats-row{
+            display:flex;
+            gap:14px;
+            flex-wrap:wrap;
+        }
+        .course-hero .hero-body .stats-row .stat{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            background:var(--bg);
+            border:1px solid var(--border);
+            padding:8px 18px;
+            border-radius:14px;
+            font-size:0.85rem;
+            color:#3d5578;
+            font-weight:600;
+        }
+        .course-hero .hero-body .stats-row .stat i{ color:var(--primary); }
+
+        /* ===== TABS ===== */
+        .tabs-bar{
+            display:flex;
+            gap:8px;
+            margin-bottom:20px;
+            background:#fff;
+            padding:6px;
+            border-radius:16px;
+            border:1px solid var(--border);
+            width:fit-content;
+        }
+        .tabs-bar .tab-btn{
+            padding:10px 24px;
+            border-radius:12px;
+            border:none;
+            background:transparent;
+            color:var(--muted);
+            font-weight:700;
+            font-size:0.9rem;
+            cursor:pointer;
+            font-family:inherit;
+            transition:0.2s;
+        }
+        .tabs-bar .tab-btn.active{
+            background:var(--primary);
+            color:#fff;
+        }
+
+        /* ===== LESSONS SECTION ===== */
+        .section-card{
+            background:#fff;
+            border-radius:24px;
+            padding:26px 26px 30px;
+            border:1px solid var(--border);
+            box-shadow:0 6px 24px rgba(18,32,63,0.04);
+        }
+        .section-title{
+            font-size:1.2rem;
+            font-weight:800;
+            margin-bottom:18px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            color:var(--text);
+        }
+        .section-title .count{
+            font-size:0.8rem;
+            color:var(--muted);
+            font-weight:500;
+        }
+
+        .lesson-card{
+            background:var(--bg);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:16px 20px;
+            margin-bottom:10px;
+            display:flex;
+            align-items:center;
+            gap:16px;
+            transition:0.25s;
+            cursor:pointer;
+        }
+        .lesson-card:hover{
+            border-color:#c8d8fb;
+            box-shadow:0 4px 16px rgba(48,98,227,0.08);
+        }
+        .lesson-card .lesson-num{
+            width:40px; height:40px;
+            border-radius:12px;
+            background:#fff;
+            color:var(--primary);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:0.95rem;
+            font-weight:800;
+            flex-shrink:0;
+            border:1px solid var(--border);
+        }
+        .lesson-card .lesson-num.completed{
+            background:var(--success);
+            color:#fff;
+            border-color:var(--success);
+        }
+        .lesson-card .lesson-num.locked{
+            background:#eef1f7;
+            color:#a8b6cc;
+        }
+        .lesson-card .lesson-info{ flex:1; }
+        .lesson-card .lesson-info h3{
+            font-size:0.98rem;
+            font-weight:700;
+            color:var(--text);
+        }
+        .lesson-card .lesson-info .lesson-meta{
+            display:flex;
+            gap:14px;
+            font-size:0.78rem;
+            color:var(--muted);
+            margin-top:3px;
+        }
+        .lesson-card .lesson-status{
+            font-size:0.75rem;
+            font-weight:700;
+            padding:5px 14px;
+            border-radius:40px;
+            flex-shrink:0;
+        }
+        .lesson-card .lesson-status.free{ color:var(--success); background:#e4f8ee; }
+        .lesson-card .lesson-status.locked{ color:#95a5c9; background:#eef1f7; }
+        .lesson-card .lesson-status.completed{ color:#fff; background:var(--success); }
+        .lesson-card .lesson-status.available{ color:var(--primary); background:#e9efff; }
+        .lesson-card .lesson-type-badge{
+            font-size:0.7rem;
+            padding:4px 10px;
+            border-radius:30px;
+            background:var(--border);
+            color:var(--muted);
+            font-weight:600;
+            flex-shrink:0;
+        }
+        .lesson-card .lesson-type-badge.video{ background:#e9efff; color:var(--primary); }
+        .lesson-card .lesson-type-badge.file{ background:#fef0e6; color:#e67e22; }
+
+        .empty-state{
+            text-align:center;
+            padding:40px 20px;
+            color:var(--muted);
+        }
+        .empty-state i{ font-size:2.5rem; display:block; margin-bottom:12px; color:#c8d8fb; }
+
+        /* ===== STICKY ENROLL CARD ===== */
+        .enroll-card{
+            background:#fff;
+            border-radius:24px;
+            padding:26px;
+            border:1px solid var(--border);
+            box-shadow:0 10px 34px rgba(18,32,63,0.07);
+            position:sticky;
+            top:100px;
+        }
+        .enroll-card .price-block{
+            text-align:center;
+            margin-bottom:20px;
+        }
+        .enroll-card .price-block .price{
+            font-size:2.1rem;
+            font-weight:800;
+            color:var(--primary);
+        }
+        .enroll-card .price-block .price small{
+            font-size:0.95rem;
+            font-weight:600;
+            color:var(--muted);
+        }
+        .enroll-card .btn-whatsapp{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            width:100%;
+            background:#25D366;
+            color:#fff;
+            border:none;
+            padding:14px;
+            border-radius:16px;
+            font-size:1rem;
+            font-weight:700;
+            cursor:pointer;
+            text-decoration:none;
+            transition:0.25s;
+            margin-bottom:12px;
+        }
+        .enroll-card .btn-whatsapp:hover{
+            background:#1ebe5b;
+            transform:translateY(-2px);
+        }
+        .enroll-card .btn-share{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            width:100%;
+            background:var(--bg);
+            color:var(--text);
+            border:1px solid var(--border);
+            padding:13px;
+            border-radius:16px;
+            font-size:0.9rem;
+            font-weight:700;
+            cursor:pointer;
+            font-family:inherit;
+        }
+        .enroll-card .btn-share:hover{ background:#e9efff; }
+
+        .enroll-card .divider{
+            height:1px;
+            background:var(--border);
+            margin:20px 0;
+        }
+        .enroll-card .info-list{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        .enroll-card .info-list .info-row{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            font-size:0.87rem;
+            color:#3d5578;
+        }
+        .enroll-card .info-list .info-row i{
+            color:var(--primary);
+            width:18px;
+        }
+
+        /* ===== VIDEO PLAYER OVERLAY ===== */
+        .video-overlay{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:var(--dark-overlay);
+            z-index:9999;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            backdrop-filter:blur(8px);
+            animation:fadeIn 0.3s ease;
+        }
+        .video-overlay.active{
+            display:flex;
+        }
+        .video-overlay .video-container{
+            width:90%;
+            max-width:1000px;
+            background:#000;
+            border-radius:20px;
+            overflow:hidden;
+            position:relative;
+            box-shadow:0 30px 80px rgba(0,0,0,0.7);
+        }
+        .video-overlay .video-container video{
+            width:100%;
+            height:auto;
+            max-height:80vh;
+            display:block;
+            background:#000;
+        }
+        .video-overlay .close-video{
+            position:absolute;
+            top:-50px;
+            left:0;
+            background:rgba(255,255,255,0.15);
+            border:none;
+            color:#fff;
+            padding:10px 20px;
+            border-radius:40px;
+            font-size:0.9rem;
+            cursor:pointer;
+            font-family:inherit;
+            transition:0.3s;
+            backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,0.1);
+        }
+        .video-overlay .close-video:hover{
+            background:rgba(255,255,255,0.25);
+        }
+        .video-overlay .video-title{
+            position:absolute;
+            bottom:-45px;
+            left:0;
+            color:#fff;
+            font-size:1rem;
+            font-weight:600;
+            opacity:0.8;
+        }
+        @keyframes fadeIn{
+            from{ opacity:0; }
+            to{ opacity:1; }
+        }
+
+        /* ===== LOADING / ALERT ===== */
+        .loading-overlay{
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(18,32,63,0.35);
+            backdrop-filter:blur(3px);
+            z-index:9998;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .spinner{
+            width:50px; height:50px;
+            border:5px solid rgba(255,255,255,0.35);
+            border-top:5px solid var(--accent);
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+        @keyframes spin{ 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+
+        .custom-alert{
+            position:fixed; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            z-index:10000;
+            animation:fadeInScale 0.2s ease-out;
+            max-width:90%;
+            direction:rtl;
+        }
+        @keyframes fadeInScale{
+            from{ opacity:0; transform:translate(-50%,-50%) scale(0.9); }
+            to{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width:992px){
+            .layout{ grid-template-columns:1fr; }
+            .enroll-card{ position:relative; top:0; order:-1; }
+        }
+        @media (max-width:768px){
+            .app-header{ padding:12px 16px; }
+            .app-header .logo{ font-size:1.1rem; }
+            .course-hero .hero-img{ height:200px; font-size:3.5rem; }
+            .course-hero .hero-body{ padding:20px; }
+            .course-hero .hero-body h1{ font-size:1.4rem; }
+            .main-content{ padding:20px 14px 50px; }
+            .video-overlay .video-container{
+                width:98%;
+                border-radius:12px;
+            }
+            .video-overlay .close-video{
+                top:-40px;
+                padding:6px 14px;
+                font-size:0.8rem;
+            }
+        }
+
+        /* ===== Custom Video Controls ===== */
+        .video-controls{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:12px 16px;
+            background:rgba(0,0,0,0.85);
+            backdrop-filter:blur(10px);
+            flex-wrap:wrap;
+        }
+        .video-controls button{
+            background:transparent;
+            border:none;
+            color:#fff;
+            font-size:1.1rem;
+            cursor:pointer;
+            padding:6px 10px;
+            border-radius:8px;
+            transition:0.2s;
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .video-controls button:hover{
+            background:rgba(255,255,255,0.15);
+        }
+        .video-controls input[type="range"]{
+            flex:1;
+            min-width:80px;
+            height:4px;
+            -webkit-appearance:none;
+            background:rgba(255,255,255,0.3);
+            border-radius:4px;
+            outline:none;
+            cursor:pointer;
+        }
+        .video-controls input[type="range"]::-webkit-slider-thumb{
+            -webkit-appearance:none;
+            width:14px;
+            height:14px;
+            border-radius:50%;
+            background:var(--accent);
+            cursor:pointer;
+        }
+        .video-controls .time-display{
+            color:#fff;
+            font-size:0.85rem;
+            font-weight:500;
+            min-width:100px;
+            text-align:center;
+        }
+        .video-controls .speed-control{
+            background:rgba(255,255,255,0.12);
+            border:1px solid rgba(255,255,255,0.15);
+            color:#fff;
+            padding:4px 12px;
+            border-radius:20px;
+            font-size:0.8rem;
+            cursor:pointer;
+            font-family:inherit;
+            transition:0.3s;
+        }
+        .video-controls .speed-control:hover{
+            background:rgba(255,255,255,0.2);
+        }
+        .video-controls .volume-control{
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .video-controls .volume-control input[type="range"]{
+            width:60px;
+            min-width:40px;
+        }
+        .video-controls .quality-select{
+            background:rgba(255,255,255,0.12);
+            border:1px solid rgba(255,255,255,0.15);
+            color:#fff;
+            padding:4px 10px;
+            border-radius:20px;
+            font-size:0.75rem;
+            cursor:pointer;
+            font-family:inherit;
+            transition:0.3s;
+        }
+        .video-controls .quality-select:hover{
+            background:rgba(255,255,255,0.2);
+        }
+        .video-controls .quality-select option{
+            background:#222;
+            color:#fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header">
+        <a href="courses.html" class="logo">نيمو <span>📚</span></a>
+        <div class="header-actions">
+            <span class="user-name" id="userName">مرحباً، طالب</span>
+            <button onclick="goBack()" class="back-btn">
+                <i class="fas fa-arrow-right"></i> رجوع
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="layout">
+
+            <!-- ===== العمود الرئيسي ===== -->
+            <div>
+                <section class="course-hero">
+                    <div class="hero-img" id="courseImage">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="hero-body">
+                        <span class="badge" id="courseBadge">كورس</span>
+                        <h1 id="courseTitle">جاري التحميل...</h1>
+                        <div class="teacher-row">
+                            <span class="t-avatar" id="teacherInitial">م</span>
+                            <span id="courseTeacher">مدرس</span>
+                        </div>
+                        <p class="description" id="courseDescription"></p>
+                        <div class="stats-row">
+                            <span class="stat"><i class="fas fa-book-open"></i> <span id="courseLessonsCount">0</span> درس</span>
+                            <span class="stat"><i class="fas fa-calendar-alt"></i> يبدأ <span id="courseStart">—</span></span>
+                            <span class="stat"><i class="fas fa-calendar-check"></i> ينتهي <span id="courseEnd">—</span></span>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="tabs-bar">
+                    <button class="tab-btn active" data-tab="content">📖 محتوى الكورس</button>
+                    <button class="tab-btn" data-tab="about">ℹ️ عن الكورس</button>
+                </div>
+
+                <!-- محتوى الكورس -->
+                <section class="section-card" id="tabContent">
+                    <div class="section-title">
+                        📚 محتوى الدورة
+                        <span class="count" id="lessonsCount">(0)</span>
+                    </div>
+                    <div id="lessonsContainer"></div>
+                </section>
+
+                <!-- عن الكورس -->
+                <section class="section-card" id="tabAbout" style="display:none;">
+                    <div class="section-title">ℹ️ عن الكورس</div>
+                    <p id="aboutText" style="color:#3d5578; line-height:1.9; font-size:0.95rem;"></p>
+                </section>
+            </div>
+
+            <!-- ===== كارت الاشتراك الثابت ===== -->
+            <aside class="enroll-card">
+                <div class="price-block">
+                    <div class="price" id="sidePriceText">—</div>
+                </div>
+
+                <a class="btn-whatsapp" id="whatsappBtn" href="#" target="_blank" rel="noopener">
+                    <i class="fab fa-whatsapp"></i> اشترك عن طريق واتساب
+                </a>
+                <button class="btn-share" onclick="shareCourse()">
+                    <i class="fas fa-share-alt"></i> مشاركة الكورس
+                </button>
+
+                <div class="divider"></div>
+
+                <div class="info-list">
+                    <div class="info-row"><i class="fas fa-chalkboard-teacher"></i> <span id="sideTeacher">مدرس</span></div>
+                    <div class="info-row"><i class="fas fa-book-open"></i> <span id="sideLessons">0 درس</span></div>
+                    <div class="info-row"><i class="fas fa-calendar-alt"></i> <span id="sideDates">—</span></div>
+                    <div class="info-row"><i class="fas fa-shield-alt"></i> دعم فني متواصل عبر واتساب</div>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- ===== VIDEO OVERLAY ===== -->
+    <div class="video-overlay" id="videoOverlay">
+        <div class="video-container" id="videoContainer">
+            <button class="close-video" onclick="closeVideo()">
+                <i class="fas fa-times"></i> إغلاق
+            </button>
+            <video id="videoPlayer" controls playsinline>
+                <source src="" type="video/mp4">
+                المتصفح لا يدعم تشغيل الفيديو.
+            </video>
+            <div class="video-controls" id="videoControls">
+                <button onclick="togglePlay()" id="playBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <input type="range" id="progressBar" value="0" step="0.01" />
+                <span class="time-display" id="timeDisplay">00:00 / 00:00</span>
+                <div class="volume-control">
+                    <button onclick="toggleMute()">
+                        <i class="fas fa-volume-up" id="volumeIcon"></i>
+                    </button>
+                    <input type="range" id="volumeBar" min="0" max="1" step="0.05" value="1" />
+                </div>
+                <button onclick="changeSpeed()" class="speed-control" id="speedBtn">1x</button>
+                <select class="quality-select" id="qualitySelect" onchange="changeQuality(this.value)">
+                    <option value="auto">جودة تلقائية</option>
+                </select>
+                <button onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            <div class="video-title" id="videoTitle"></div>
+        </div>
+    </div>
+
+    <!-- ===== FIREBASE SDK ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // ========== FIREBASE CONFIG ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+            authDomain: "nemo-8d0c7.firebaseapp.com",
+            projectId: "nemo-8d0c7",
+            storageBucket: "nemo-8d0c7.firebasestorage.app",
+            messagingSenderId: "585101385202",
+            appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        const SUPPORT_PHONE = "201211493385";
+
+        // ========== متغيرات عامة ==========
+        let currentUser = null;
+        let courseId = null;
+        let currentCourse = null;
+        let teacherName = 'مدرس';
+        let allLessons = [];
+
+        // ========== Video Player Variables ==========
+        let currentVideoElement = null;
+        let currentSpeed = 1;
+        let isDragging = false;
+
+        // ========== دوال مساعدة ==========
+        function showLoading(show = true) {
+            let loader = document.querySelector('.loading-overlay');
+            if (show) {
+                if (loader) return;
+                const div = document.createElement('div');
+                div.className = 'loading-overlay';
+                div.innerHTML = '<div class="spinner"></div>';
+                document.body.appendChild(div);
+            } else {
+                if (loader) loader.remove();
+            }
+        }
+
+        function showCustomAlert(icon, title, message, callback) {
+            const oldAlert = document.querySelector(".custom-alert");
+            if (oldAlert) oldAlert.remove();
+
+            let bgColor, iconEmoji;
+            if (icon === "success") { bgColor = "linear-gradient(135deg, #3062e3, #1f45b0)"; iconEmoji = "✅"; }
+            else if (icon === "warning") { bgColor = "linear-gradient(135deg, #f39c12, #e67e22)"; iconEmoji = "⚠️"; }
+            else if (icon === "error") { bgColor = "linear-gradient(135deg, #e74c3c, #c0392b)"; iconEmoji = "❌"; }
+            else { bgColor = "#3062e3"; iconEmoji = "ℹ️"; }
+
+            const alertDiv = document.createElement("div");
+            alertDiv.className = "custom-alert";
+            alertDiv.innerHTML = `
+                <div style="background: ${bgColor}; direction: rtl; text-align: center; padding: 1.5rem 2rem; border-radius: 1.5rem; color: white; box-shadow: 0 20px 45px -10px rgba(0,0,0,0.3); min-width: 280px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size: 2.5rem; margin-bottom: 8px;">${iconEmoji}</div>
+                    <h3 style="margin: 0 0 10px 0; font-weight: 700; font-size: 1.2rem;">${title}</h3>
+                    <p style="margin: 0; font-size: 0.95rem; opacity: 0.95; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+                    <div style="margin-top: 16px;"><button class="alert-close-btn" style="background: rgba(255,255,255,0.15); border: none; padding: 8px 28px; border-radius: 50px; color: white; cursor: pointer; font-weight: 600; font-size: 0.95rem;">حسنًا</button></div>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            alertDiv.querySelector(".alert-close-btn").addEventListener("click", () => {
+                alertDiv.remove();
+                if (callback) callback();
+            });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        function goBack() { window.history.back(); }
+
+        // ========== استخراج courseId من الرابط ==========
+        function getCourseId() {
+            const params = new URLSearchParams(window.location.search);
+            courseId = params.get("courseId") || params.get("id");
+            if (!courseId) {
+                showCustomAlert('error', 'خطأ', 'لم يتم تحديد الكورس', () => {
+                    window.location.href = 'courses.html';
+                });
+                return false;
+            }
+            return true;
+        }
+
+        // ========== جلب اسم المدرس ==========
+        async function loadTeacherName(teacherId) {
+            if (!teacherId) return 'مدرس';
+            try {
+                const doc = await db.collection('users').doc(teacherId).get();
+                return doc.exists ? (doc.data().name || 'مدرس') : 'مدرس';
+            } catch (e) {
+                return 'مدرس';
+            }
+        }
+
+        // ========== تحميل بيانات الكورس ==========
+        async function loadCourse() {
+            const doc = await db.collection("courses").doc(courseId).get();
+            if (!doc.exists) {
+                showCustomAlert('error', 'خطأ', 'الكورس غير موجود', () => {
+                    window.location.href = 'courses.html';
+                });
+                return;
+            }
+
+            currentCourse = { id: doc.id, ...doc.data() };
+            teacherName = await loadTeacherName(currentCourse.teacherId);
+
+            document.getElementById("courseTitle").textContent = currentCourse.title || "بدون عنوان";
+            document.getElementById("courseDescription").textContent = currentCourse.description || "";
+            document.getElementById("courseTeacher").textContent = teacherName;
+            document.getElementById("teacherInitial").textContent = teacherName.trim().charAt(0) || "م";
+            document.getElementById("courseLessonsCount").textContent = currentCourse.totalLessons || 0;
+            document.getElementById("courseStart").textContent = currentCourse.startDate || "—";
+            document.getElementById("courseEnd").textContent = currentCourse.endDate || "—";
+
+            const imageEl = document.getElementById("courseImage");
+            if (currentCourse.imageUrl) {
+                imageEl.innerHTML = `
+                    <img src="${currentCourse.imageUrl}" alt="${escapeHtml(currentCourse.title)}" />
+                    <span class="price-chip">${currentCourse.price != null ? currentCourse.price + ' ج.م' : 'مجاني'}</span>
+                `;
+            } else {
+                imageEl.innerHTML = `
+                    <i class="fas fa-book"></i>
+                    <span class="price-chip">${currentCourse.price != null ? currentCourse.price + ' ج.م' : 'مجاني'}</span>
+                `;
+            }
+
+            document.getElementById("sidePriceText").innerHTML =
+                currentCourse.price != null ? `${currentCourse.price} <small>ج.م</small>` : 'مجاني';
+            document.getElementById("sideTeacher").textContent = teacherName;
+            document.getElementById("sideLessons").textContent = `${currentCourse.totalLessons || 0} درس`;
+            document.getElementById("sideDates").textContent =
+                `${currentCourse.startDate || '—'} → ${currentCourse.endDate || '—'}`;
+
+            const waMessage = encodeURIComponent(`أهلاً، عايز أشترك في كورس "${currentCourse.title}"`);
+            document.getElementById("whatsappBtn").href = `https://wa.me/${SUPPORT_PHONE}?text=${waMessage}`;
+
+            document.getElementById("aboutText").textContent =
+                currentCourse.description || "لا يوجد وصف تفصيلي لهذا الكورس بعد.";
+
+            document.title = `منصة نيمو • ${currentCourse.title || 'الكورس'}`;
+        }
+
+        // ========== تحميل الدروس ==========
+        async function loadLessons() {
+            try {
+                const snapshot = await db.collection("lessons")
+                    .where("courseId", "==", courseId)
+                    .get();
+
+                allLessons = [];
+                snapshot.forEach(doc => allLessons.push({ id: doc.id, ...doc.data() }));
+                allLessons.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                document.getElementById("lessonsCount").textContent = `(${allLessons.length})`;
+                renderLessons();
+            } catch (error) {
+                console.error("خطأ في تحميل الدروس:", error);
+                renderLessons();
+            }
+        }
+
+        // ========== عرض الدروس ==========
+        function renderLessons() {
+            const container = document.getElementById("lessonsContainer");
+
+            if (allLessons.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <p>لسه معملش محتوى للكورس ده</p>
+                        <p style="font-size:0.85rem;">هيتم إضافة الدروس قريبًا</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allLessons.map((lesson, index) => {
+                const lessonNumber = String(index + 1).padStart(2, "0");
+                const isFree = lesson.isFree === true;
+                const isVideo = lesson.type === 'video' || lesson.videoUrl;
+                const isFile = lesson.type === 'file' || lesson.fileUrl;
+                const typeLabel = isVideo ? '🎬 فيديو' : (isFile ? '📄 ملف' : '📝 محتوى');
+
+                return `
+                    <div class="lesson-card" onclick="openLesson('${lesson.id}')">
+                        <div class="lesson-num ${isFree ? '' : ''}">${lessonNumber}</div>
+                        <div class="lesson-info">
+                            <h3>${escapeHtml(lesson.title || 'محاضرة بدون عنوان')}</h3>
+                            <div class="lesson-meta">
+                                <span><i class="fas fa-clock"></i> ${lesson.duration || 0} دقيقة</span>
+                                <span class="lesson-type-badge ${isVideo ? 'video' : (isFile ? 'file' : '')}">${typeLabel}</span>
+                            </div>
+                        </div>
+                        <span class="lesson-status ${isFree ? 'free' : 'available'}">${isFree ? '🎁 مجاني' : '📺 مشاهدة'}</span>
+                        <i class="fas fa-chevron-left" style="color:#c8d8fb;"></i>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========== فتح الدرس ==========
+        function openLesson(lessonId) {
+            const lesson = allLessons.find(l => l.id === lessonId);
+            if (!lesson) {
+                showCustomAlert('error', 'خطأ', 'الدرس غير موجود');
+                return;
+            }
+
+            // لو فيديو - يفتح في نفس الصفحة
+            if (lesson.videoUrl || lesson.type === 'video') {
+                const videoUrl = lesson.videoUrl || '';
+                if (videoUrl) {
+                    openVideoPlayer(videoUrl, lesson.title || 'فيديو');
+                } else {
+                    showCustomAlert('warning', 'تنبيه', 'رابط الفيديو غير متوفر');
+                }
+                return;
+            }
+
+            // لو ملف - يفتح في نافذة جديدة
+            if (lesson.fileUrl || lesson.type === 'file') {
+                const fileUrl = lesson.fileUrl || '';
+                if (fileUrl) {
+                    window.open(fileUrl, '_blank', 'noopener,noreferrer');
+                } else {
+                    showCustomAlert('warning', 'تنبيه', 'رابط الملف غير متوفر');
+                }
+                return;
+            }
+
+            // لو حاجة تانية - نفتح صفحة الدرس العادية
+            window.location.href = `lesson-view.html?id=${lessonId}&courseId=${courseId}`;
+        }
+
+        // ========== مشغل الفيديو ==========
+        function openVideoPlayer(videoUrl, title) {
+            const overlay = document.getElementById('videoOverlay');
+            const video = document.getElementById('videoPlayer');
+            const titleEl = document.getElementById('videoTitle');
+
+            // تعيين مصدر الفيديو
+            video.src = videoUrl;
+            video.load();
+            titleEl.textContent = title || 'فيديو';
+
+            // إعادة تعيين عناصر التحكم
+            document.getElementById('speedBtn').textContent = '1x';
+            currentSpeed = 1;
+            video.playbackRate = 1;
+            document.getElementById('progressBar').value = 0;
+            document.getElementById('timeDisplay').textContent = '00:00 / 00:00';
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
+
+            // محاولة استخراج جودات الفيديو المتاحة
+            const qualitySelect = document.getElementById('qualitySelect');
+            qualitySelect.innerHTML = '<option value="auto">جودة تلقائية</option>';
+            // إضافة خيارات الجودة الافتراضية
+            ['1080p', '720p', '480p', '360p'].forEach(q => {
+                const opt = document.createElement('option');
+                opt.value = q;
+                opt.textContent = q;
+                qualitySelect.appendChild(opt);
+            });
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // بدء التشغيل
+            video.play().catch(() => {
+                // بعض المتصفحات تطلب تفاعل المستخدم أولاً
+            });
+
+            // ربط التحكمات
+            currentVideoElement = video;
+            setupVideoControls(video);
+        }
+
+        function closeVideo() {
+            const overlay = document.getElementById('videoOverlay');
+            const video = document.getElementById('videoPlayer');
+            video.pause();
+            video.src = '';
+            video.load();
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            currentVideoElement = null;
+        }
+
+        // ========== إعداد تحكمات الفيديو ==========
+        function setupVideoControls(video) {
+            const progressBar = document.getElementById('progressBar');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const playBtn = document.getElementById('playBtn');
+            const volumeBar = document.getElementById('volumeBar');
+            const volumeIcon = document.getElementById('volumeIcon');
+
+            // تحديث شريط التقدم
+            video.addEventListener('timeupdate', () => {
+                if (!isDragging) {
+                    const progress = (video.currentTime / video.duration) * 100;
+                    progressBar.value = progress;
+                }
+                updateTimeDisplay(video, timeDisplay);
+            });
+
+            // تحديث مدة الفيديو عند التحميل
+            video.addEventListener('loadedmetadata', () => {
+                updateTimeDisplay(video, timeDisplay);
+                progressBar.max = 100;
+            });
+
+            // تحديث شريط التقدم يدويًا
+            progressBar.addEventListener('input', (e) => {
+                isDragging = true;
+                const value = parseFloat(e.target.value);
+                const time = (value / 100) * video.duration;
+                video.currentTime = time;
+                updateTimeDisplay(video, timeDisplay);
+            });
+
+            progressBar.addEventListener('change', () => {
+                isDragging = false;
+            });
+
+            // زر التشغيل/الإيقاف
+            playBtn.addEventListener('click', togglePlay);
+
+            // الفيديو نفسه
+            video.addEventListener('click', togglePlay);
+            video.addEventListener('play', () => {
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            });
+            video.addEventListener('pause', () => {
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+
+            // التحكم في الصوت
+            volumeBar.addEventListener('input', (e) => {
+                video.volume = parseFloat(e.target.value);
+                updateVolumeIcon(video, volumeIcon);
+            });
+
+            // لوحة المفاتيح
+            video.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Space') {
+                    e.preventDefault();
+                    togglePlay();
+                }
+            });
+        }
+
+        function togglePlay() {
+            const video = document.getElementById('videoPlayer');
+            if (video.paused) {
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        }
+
+        function updateTimeDisplay(video, element) {
+            if (!video.duration) return;
+            const current = formatTime(video.currentTime);
+            const total = formatTime(video.duration);
+            element.textContent = `${current} / ${total}`;
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || !isFinite(seconds)) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function toggleMute() {
+            const video = document.getElementById('videoPlayer');
+            video.muted = !video.muted;
+            const icon = document.getElementById('volumeIcon');
+            if (video.muted) {
+                icon.className = 'fas fa-volume-mute';
+            } else {
+                icon.className = 'fas fa-volume-up';
+            }
+        }
+
+        function updateVolumeIcon(video, icon) {
+            if (video.muted) {
+                icon.className = 'fas fa-volume-mute';
+            } else if (video.volume === 0) {
+                icon.className = 'fas fa-volume-off';
+            } else if (video.volume < 0.5) {
+                icon.className = 'fas fa-volume-down';
+            } else {
+                icon.className = 'fas fa-volume-up';
+            }
+        }
+
+        function changeSpeed() {
+            const video = document.getElementById('videoPlayer');
+            const speedBtn = document.getElementById('speedBtn');
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+            let index = speeds.indexOf(currentSpeed);
+            index = (index + 1) % speeds.length;
+            currentSpeed = speeds[index];
+            video.playbackRate = currentSpeed;
+            speedBtn.textContent = `${currentSpeed}x`;
+        }
+
+        function changeQuality(quality) {
+            // في الواقع، تغيير الجودة يتطلب مصادر متعددة للفيديو
+            // هذه مجرد واجهة توضيحية
+            if (quality === 'auto') {
+                showCustomAlert('info', 'جودة تلقائية', 'سيتم اختيار أفضل جودة تلقائيًا');
+            } else {
+                showCustomAlert('info', 'جودة', `تم اختيار جودة ${quality}`);
+            }
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('videoContainer');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(() => {
+                    // محاولة الدخول في وضع ملء الشاشة على العنصر
+                    document.getElementById('videoPlayer').requestFullscreen().catch(() => {});
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ========== مشاركة الكورس ==========
+        function shareCourse() {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: currentCourse?.title || 'كورس مميز',
+                    text: `📚 اكتشف كورس ${currentCourse?.title || ''} على منصة نيمو`,
+                    url: url
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    showCustomAlert('success', 'تم النسخ', 'تم نسخ رابط الكورس إلى الحافظة');
+                }).catch(() => {
+                    showCustomAlert('info', 'الرابط', url);
+                });
+            }
+        }
+
+        // ========== التابات ==========
+        function initTabs() {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const tab = btn.dataset.tab;
+                    document.getElementById('tabContent').style.display = tab === 'content' ? 'block' : 'none';
+                    document.getElementById('tabAbout').style.display = tab === 'about' ? 'block' : 'none';
+                });
+            });
+        }
+
+        // ========== تحميل بيانات المستخدم ==========
+        async function loadUserData(uid) {
+            try {
+                const doc = await db.collection('users').doc(uid).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('userName').textContent = `مرحباً، ${data.name || 'طالب'}`;
+                }
+            } catch (error) {
+                console.error("خطأ في تحميل بيانات المستخدم:", error);
+            }
+        }
+
+        // ========== إغلاق الفيديو بالـ Escape ==========
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeVideo();
+            }
+        });
+
+        // ========== التشغيل الرئيسي ==========
+        async function init() {
+            initTabs();
+            if (!getCourseId()) return;
+
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    showLoading(true);
+                    try {
+                        await loadUserData(user.uid);
+                        await loadCourse();
+                        await loadLessons();
+                    } catch (error) {
+                        console.error("خطأ في تهيئة الصفحة:", error);
+                        showCustomAlert('error', 'خطأ', 'حدث خطأ أثناء تحميل الصفحة');
+                    } finally {
+                        showLoading(false);
+                    }
+                } else {
+                    showCustomAlert('warning', 'تنبيه', '⚠️ يرجى تسجيل الدخول أولاً', () => {
+                        window.location.href = '../index.html';
+                    });
+                }
+            });
+        }
+
+        // ========== ربط الدوال العامة ==========
+        window.openLesson = openLesson;
+        window.goBack = goBack;
+        window.shareCourse = shareCourse;
+        window.openVideoPlayer = openVideoPlayer;
+        window.closeVideo = closeVideo;
+        window.togglePlay = togglePlay;
+        window.toggleMute = toggleMute;
+        window.changeSpeed = changeSpeed;
+        window.changeQuality = changeQuality;
+        window.toggleFullscreen = toggleFullscreen;
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>

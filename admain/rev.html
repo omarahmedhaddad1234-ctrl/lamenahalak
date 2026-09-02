@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لميناهالك | لوحة التحكم</title>
+
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background: #f1f6fa;
+      min-height: 100vh;
+      color: #1e2f40;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #1a3348, #0f2537);
+      color: #fff;
+      min-height: 100vh;
+      padding: 30px 18px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.08);
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .sidebar .brand {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding-bottom: 18px;
+    }
+    .sidebar .brand i {
+      margin-left: 8px;
+      color: #7fb9f0;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: #e1edf7;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: 0.2s;
+      background: transparent;
+      cursor: pointer;
+    }
+    .nav-links a i {
+      width: 22px;
+      font-size: 18px;
+      color: #8bb4d9;
+    }
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateX(-4px);
+    }
+    .nav-links a.active-link {
+      background: rgba(255,255,255,0.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .nav-links a.active-link i {
+      color: #ffd966;
+    }
+
+    .main {
+      margin-right: 280px;
+      flex: 1;
+      padding: 35px 40px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 28px;
+    }
+    .topbar h1 {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .topbar h1 i {
+      color: #2a6b9c;
+      margin-left: 8px;
+    }
+    .topbar .sub {
+      color: #5b6f82;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px 20px;
+      border: 1px solid #e2eaf2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .stat-card .num {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a3f5c;
+    }
+    .stat-card .label {
+      color: #6b7f93;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 24px;
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 40px;
+      border: 1px solid #dce7f0;
+    }
+    .filter-row input {
+      padding: 10px 16px;
+      border-radius: 30px;
+      border: 1px solid #d0dde9;
+      background: #f7fafd;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1f3b55;
+      outline: none;
+      transition: 0.15s;
+      flex: 1;
+      min-width: 180px;
+    }
+    .filter-row input:focus {
+      border-color: #3d7eb3;
+      box-shadow: 0 0 0 3px rgba(61, 126, 179, 0.12);
+    }
+    .filter-row .badge-count {
+      background: #0f2c42;
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: auto;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 22px;
+      margin-top: 6px;
+    }
+
+    .user-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 20px 22px 18px;
+      border: 1px solid #e5eef6;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .user-card:hover {
+      border-color: #b9d1e8;
+      box-shadow: 0 8px 20px rgba(0, 30, 60, 0.06);
+      transform: translateY(-3px);
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .user-avatar.teacher {
+      background: #1a5fb4;
+    }
+    .user-avatar.student {
+      background: #16a34a;
+    }
+    .user-avatar.course {
+      background: #b45309;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+    .user-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0d2a44;
+    }
+    .user-email {
+      font-size: 13px;
+      color: #4b6a88;
+      word-break: break-all;
+    }
+    .user-role {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 40px;
+    }
+    .user-role.teacher-role {
+      background: #dbeafe;
+      color: #1a5fb4;
+    }
+    .user-role.student-role {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .user-role.course-role {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .user-preview {
+      font-size: 13px;
+      color: #6b7f93;
+      margin-top: 4px;
+    }
+    .user-preview i {
+      margin-left: 4px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: #6f8aa8;
+      background: #f6faff;
+      border-radius: 48px;
+      border: 2px dashed #d3e0ee;
+    }
+    .empty-state i {
+      font-size: 2.8rem;
+      margin-bottom: 14px;
+      opacity: 0.5;
+    }
+
+    /* ===== Modal ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 28px;
+      padding: 32px 36px;
+      max-width: 580px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: modalFade 0.25s ease;
+    }
+    @keyframes modalFade {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid #eef4f9;
+    }
+    .modal-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0d2a44;
+    }
+    .modal-header h2 i {
+      margin-left: 10px;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #8aa0b5;
+      cursor: pointer;
+      transition: 0.15s;
+      padding: 0 8px;
+    }
+    .modal-close:hover {
+      color: #dc2626;
+      transform: rotate(90deg);
+    }
+
+    .modal-body .info-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .modal-body .info-row .label {
+      font-weight: 600;
+      color: #1f3b55;
+      min-width: 90px;
+    }
+    .modal-body .info-row .value {
+      color: #2d4b6b;
+    }
+
+    .modal-body .courses-section {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #e8eef5;
+    }
+    .modal-body .courses-section .section-title {
+      font-weight: 700;
+      font-size: 16px;
+      color: #1f3b55;
+      margin-bottom: 10px;
+    }
+    .modal-body .courses-section .course-item {
+      background: #f7fafd;
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      border: 1px solid #e8eef5;
+    }
+    .modal-body .courses-section .course-item .c-title {
+      font-weight: 600;
+      color: #0d2a44;
+    }
+    .modal-body .courses-section .course-item .c-meta {
+      color: #4b6a88;
+      font-size: 13px;
+    }
+    .modal-body .courses-section .course-item .c-meta i {
+      margin-left: 4px;
+    }
+    .modal-body .courses-section .no-courses {
+      color: #8aa0b5;
+      font-style: italic;
+      font-size: 14px;
+    }
+
+    .modal-footer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eef4f9;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    .btn-danger {
+      background: #fef2f2;
+      color: #dc2626;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #edf2f7;
+      color: #1f3b55;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.15s;
+    }
+    .btn-secondary:hover {
+      background: #dce4ed;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a3348;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 99999;
+      opacity: 0;
+      transition: 0.3s;
+      pointer-events: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: #b91c1c; }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(3px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 5px solid rgba(255,255,255,0.4);
+      border-top: 5px solid #1f3b55;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+        padding: 18px;
+      }
+      .main { margin-right: 0; padding: 20px; }
+      body { flex-direction: column; }
+      .filter-row { border-radius: 24px; padding: 14px; }
+      .modal-box { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand"><i class="fas fa-users-cog"></i> لميناهالك</div>
+    <nav class="nav-links">
+      <a data-page="teachers">
+        <i class="fas fa-chalkboard-teacher"></i> المدرسين
+      </a>
+      <a data-page="students">
+        <i class="fas fa-user-graduate"></i> الطلاب
+      </a>
+      <a class="active-link" data-page="courses">
+        <i class="fas fa-book"></i> الكورسات
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main" id="mainContent"></main>
+
+  <!-- ===== Modal ===== -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modalTitle"><i class="fas fa-user"></i> تفاصيل</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- يتم ملؤها بواسطة JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modalCloseBtn">إغلاق</button>
+        <button class="btn-danger" id="modalDeleteBtn"><i class="fas fa-trash-alt"></i> حذف</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+      authDomain: "nemo-8d0c7.firebaseapp.com",
+      projectId: "nemo-8d0c7",
+      storageBucket: "nemo-8d0c7.firebasestorage.app",
+      messagingSenderId: "585101385202",
+      appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const mainEl = document.getElementById('mainContent');
+    const toastEl = document.getElementById('toast');
+    const modal = document.getElementById('detailModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalClose = document.getElementById('modalClose');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalDeleteBtn = document.getElementById('modalDeleteBtn');
+
+    let allTeachers = [];
+    let allStudents = [];
+    let allCourses = [];
+    let allEnrollments = [];
+    let currentModalUser = null;
+    let currentModalType = null;
+    let currentModalItemId = null;
+
+    function escapeHtml(text) {
+      if (!text) return '—';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(msg, isError = false) {
+      toastEl.textContent = msg;
+      toastEl.className = 'toast show' + (isError ? ' error' : '');
+      setTimeout(() => { toastEl.className = 'toast'; }, 2800);
+    }
+
+    function showLoading(show = true) {
+      let loader = document.querySelector('.loading-overlay');
+      if (show) {
+        if (loader) return;
+        const div = document.createElement('div');
+        div.className = 'loading-overlay';
+        div.innerHTML = '<div class="spinner"></div>';
+        document.body.appendChild(div);
+      } else {
+        if (loader) loader.remove();
+      }
+    }
+
+    function getInitials(name) {
+      if (!name) return '?';
+      const parts = name.trim().split(' ');
+      return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
+    }
+
+    // دالة مساعدة للحصول على اسم الكورس من id
+    function getCourseName(courseId) {
+      const course = allCourses.find(c => c.id === courseId);
+      return course ? course.title : 'كورس غير معروف';
+    }
+
+    // دالة مساعدة للحصول على اسم المدرس من id
+    function getTeacherName(teacherId) {
+      const teacher = allTeachers.find(t => t.id === teacherId);
+      return teacher ? teacher.name : 'مدرس غير معروف';
+    }
+
+    // ===== تحميل جميع البيانات =====
+    async function loadAllData() {
+      showLoading(true);
+      try {
+        const usersSnap = await db.collection('users').get();
+        const teachers = [];
+        const students = [];
+        usersSnap.forEach(doc => {
+          const data = doc.data();
+          const user = { id: doc.id, ...data };
+          if (data.role === 'teacher') teachers.push(user);
+          else if (data.role === 'student') students.push(user);
+        });
+        allTeachers = teachers;
+        allStudents = students;
+
+        const coursesSnap = await db.collection('courses').get();
+        allCourses = [];
+        coursesSnap.forEach(doc => {
+          allCourses.push({ id: doc.id, ...doc.data() });
+        });
+
+        const enrollSnap = await db.collection('enrollments')
+          .where('status', '==', 'active')
+          .get();
+        allEnrollments = [];
+        enrollSnap.forEach(doc => {
+          allEnrollments.push({ id: doc.id, ...doc.data() });
+        });
+
+        // نبدأ بصفحة الطلاب عشان نشوف النتيجة مباشرة
+        renderStudentsPage();
+
+      } catch (err) {
+        console.error('خطأ في تحميل البيانات:', err);
+        showToast('❌ خطأ في التحميل: ' + err.message, true);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ===== صفحة الكورسات =====
+    function renderCoursesPage() {
+      mainEl.innerHTML = `
+        <div class="topbar">
+          <div>
+            <h1><i class="fas fa-book"></i> الكورسات</h1>
+            <div class="sub">اضغط على أي كورس لعرض التفاصيل الكاملة</div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <div class="num">${allCourses.length}</div>
+            <div class="label">إجمالي الكورسات</div>
+          </div>
+          <div class="stat-card">
+            <div class="num">${allEnrollments.length}</div>
+            <div class="label">إجمالي الاشتراكات</div>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <input type="text" id="searchInput" placeholder="🔍 بحث باسم الكورس..." />
+          <span class="badge-count" id="filteredCount">0</span>
+        </div>
+
+        <div id="cardsContainer" class="cards-grid">
+          ${renderCourseCards()}
+        </div>
+      `;
+
+      document.getElementById('searchInput').addEventListener('input', () => {
+        const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+        const filtered = allCourses.filter(c => c.title.toLowerCase().includes(searchTerm));
+        document.getElementById('filteredCount').textContent = filtered.length;
+        document.getElementById('cardsContainer').innerHTML = renderCourseCards(filtered);
+      });
+
+      document.getElementById('filteredCount').textContent = allCourses.length;
+    }
+
+    function renderCourseCards(courses = allCourses) {
+      if (courses.length === 0) {
+        return `<div class="empty-state"><i class="fas fa-search"></i><p>لا توجد كورسات</p></div>`;
+      }
+
+      return courses.map(course => {
+        const teacherName = getTeacherName(course.teacherId);
+        const studentsCount = allEnrollments.filter(e => e.courseId === course.id).length;
+        return `
+          <div class="user-card" onclick="openCourseModal('${course.id}')">
+            <div class="user-header">
+              <div class="user-avatar course">${getInitials(course.title)}</div>
+              <div class="user-info">
+                <div class="user-name">${escapeHtml(course.title)}</div>
+                <div class="user-email">${escapeHtml(teacherName)}</div>
+              </div>
+              <span class="user-role course-role">📖 كورس</span>
+            </div>
+            <div class="user-preview">
+              <i class="fas fa-users"></i> ${studentsCount} طالب | <i class="fas fa-dollar-sign"></i> ${course.price || 0}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ===== فتح مودال الكورس =====
+    window.openCourseModal = function(courseId) {
+      const course = allCourses.find(c => c.id === courseId);
+      if (!course) return;
+
+      currentModalItemId = courseId;
+      currentModalType = 'course';
+
+      const teacherName = getTeacherName(course.teacherId);
+      const studentsCount = allEnrollments.filter(e => e.courseId === courseId).length;
+
+      modalTitle.innerHTML = `<i class="fas fa-book"></i> ${escapeHtml(course.title)}`;
+
+      modalBody.innerHTML = `
+        <div class="info-row"><span class="label">📚 اسم الكورس:</span><span class="value">${escapeHtml(course.title)}</span></div>
+        <div class="info-row"><span class="label">👨‍🏫 المدرس:</span><span class="value">${escapeHtml(teacherName)}</span></div>
+        <div class="info-row"><span class="label">💰 السعر:</span><span class="value">${course.price || 0} $</span></div>
+        <div class="info-row"><span class="label">👥 عدد المشتركين:</span><span class="value">${studentsCount}</span></div>
+        ${course.description ? `<div class="info-row"><span class="label">📝 وصف:</span><span class="value">${escapeHtml(course.description)}</span></div>` : ''}
+      `;
+
+      modalDeleteBtn.dataset.id = courseId;
+      modalDeleteBtn.dataset.type = 'course';
+      modalDeleteBtn.style.display = 'flex';
+      modal.classList.add('open');
+    };
+
+    // ===== إغلاق المودال =====
+    function closeModal() {
+      modal.classList.remove('open');
+      currentModalUser = null;
+      currentModalType = null;
+      currentModalItemId = null;
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // ===== حذف الكورس =====
+    modalDeleteBtn.addEventListener('click', async () => {
+      const id = modalDeleteBtn.dataset.id;
+      const type = modalDeleteBtn.dataset.type;
+      if (!id || type !== 'course') return;
+
+      if (!confirm('هل أنت متأكد من حذف هذا الكورس نهائياً؟')) return;
+
+      modalDeleteBtn.disabled = true;
+      modalDeleteBtn.innerHTML = 'جاري الحذف...';
+
+      try {
+        await db.collection('courses').doc(id).delete();
+
+        const enrollsToDelete = allEnrollments.filter(e => e.courseId === id);
+        for (const e of enrollsToDelete) {
+          await db.collection('enrollments').doc(e.id).delete();
+        }
+
+        allCourses = allCourses.filter(c => c.id !== id);
+        allEnrollments = allEnrollments.filter(e => e.courseId !== id);
+
+        renderCoursesPage();
+        showToast('✅ تم حذف الكورس بنجاح');
+        closeModal();
+
+      } catch (err) {
+        console.error('خطأ في الحذف:', err);
+        showToast('❌ خطأ في الحذف: ' + err.message, true);
+      } finally {
+        modalDeleteBtn.disabled = false;
+        modalDeleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> حذف';
+      }
+    });
+
+    // ===== تبديل الصفحات =====
+    function switchPage(page) {
+      document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active-link'));
+      const targetLink = document.querySelector(`.nav-links a[data-page="${page}"]`);
+      if (targetLink) targetLink.classList.add('active-link');
+
+      if (page === 'teachers') renderTeachersPage();
+      else if (page === 'students') renderStudentsPage();
+      else if (page === 'courses') renderCoursesPage();
+    }
+
+    // ===== عرض المدرسين =====
+    function renderTeachersPage() {
+      mainEl.innerHTML = `
+        <div class="topbar">
+          <div>
+            <h1><i class="fas fa-chalkboard-teacher"></i> المدرسين</h1>
+            <div class="sub">اضغط على أي مدرس لعرض جميع كورساته وتفاصيله</div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat-card"><div class="num">${allTeachers.length}</div><div class="label">إجمالي المدرسين</div></div>
+          <div class="stat-card"><div class="num">${allCourses.length}</div><div class="label">إجمالي الكورسات</div></div>
+        </div>
+        <div class="filter-row">
+          <input type="text" id="searchInput" placeholder="🔍 بحث باسم المدرس أو الإيميل..." />
+          <span class="badge-count" id="filteredCount">0</span>
+        </div>
+        <div id="cardsContainer" class="cards-grid">${renderTeacherCards()}</div>
+      `;
+      document.getElementById('searchInput').addEventListener('input', () => {
+        const term = document.getElementById('searchInput').value.trim().toLowerCase();
+        const filtered = allTeachers.filter(t => (t.name + t.email).toLowerCase().includes(term));
+        document.getElementById('filteredCount').textContent = filtered.length;
+        document.getElementById('cardsContainer').innerHTML = renderTeacherCards(filtered);
+      });
+      document.getElementById('filteredCount').textContent = allTeachers.length;
+    }
+
+    function renderTeacherCards(teachers = allTeachers) {
+      if (!teachers.length) return `<div class="empty-state"><i class="fas fa-search"></i><p>لا توجد نتائج</p></div>`;
+      return teachers.map(t => {
+        const tc = allCourses.filter(c => c.teacherId === t.id);
+        return `
+          <div class="user-card" onclick="openTeacherModal('${t.id}')">
+            <div class="user-header">
+              <div class="user-avatar teacher">${getInitials(t.name)}</div>
+              <div class="user-info"><div class="user-name">${escapeHtml(t.name)}</div><div class="user-email">${escapeHtml(t.email)}</div></div>
+              <span class="user-role teacher-role">📚 مدرس</span>
+            </div>
+            <div class="user-preview"><i class="fas fa-book"></i> ${tc.length} كورس</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.openTeacherModal = function(teacherId) {
+      const teacher = allTeachers.find(t => t.id === teacherId);
+      if (!teacher) return;
+      currentModalItemId = teacherId;
+      currentModalType = 'teacher';
+      const tc = allCourses.filter(c => c.teacherId === teacherId);
+      modalTitle.innerHTML = `<i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(teacher.name)}`;
+      modalBody.innerHTML = `
+        <div class="info-row"><span class="label">📧 الإيميل:</span><span class="value">${escapeHtml(teacher.email)}</span></div>
+        <div class="info-row"><span class="label">📚 الدور:</span><span class="value">مدرس</span></div>
+        <div class="courses-section"><div class="section-title"><i class="fas fa-book"></i> الكورسات (${tc.length})</div>
+        ${tc.length ? tc.map(c => `<div class="course-item"><span class="c-title">${escapeHtml(c.title)}</span><span class="c-meta"><i class="fas fa-users"></i> ${allEnrollments.filter(e=>e.courseId===c.id).length} طالب</span></div>`).join('') : '<div class="no-courses">لا يوجد كورسات</div>'}
+        </div>
+      `;
+      modalDeleteBtn.dataset.id = teacherId;
+      modalDeleteBtn.dataset.type = 'teacher';
+      modalDeleteBtn.style.display = 'flex';
+      modal.classList.add('open');
+    };
+
+    // ===== عرض الطلاب مع عدد الكورسات وأسمائها =====
+    function renderStudentsPage() {
+      mainEl.innerHTML = `
+        <div class="topbar">
+          <div>
+            <h1><i class="fas fa-user-graduate"></i> الطلاب</h1>
+            <div class="sub">اضغط على أي طالب لعرض الكورسات المشترك فيها مع أسمائها</div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat-card"><div class="num">${allStudents.length}</div><div class="label">إجمالي الطلاب</div></div>
+          <div class="stat-card"><div class="num">${allEnrollments.length}</div><div class="label">إجمالي الاشتراكات</div></div>
+        </div>
+        <div class="filter-row">
+          <input type="text" id="searchInput" placeholder="🔍 بحث باسم الطالب أو الإيميل..." />
+          <span class="badge-count" id="filteredCount">0</span>
+        </div>
+        <div id="cardsContainer" class="cards-grid">${renderStudentCards()}</div>
+      `;
+      document.getElementById('searchInput').addEventListener('input', () => {
+        const term = document.getElementById('searchInput').value.trim().toLowerCase();
+        const filtered = allStudents.filter(s => (s.name + s.email).toLowerCase().includes(term));
+        document.getElementById('filteredCount').textContent = filtered.length;
+        document.getElementById('cardsContainer').innerHTML = renderStudentCards(filtered);
+      });
+      document.getElementById('filteredCount').textContent = allStudents.length;
+    }
+
+    function renderStudentCards(students = allStudents) {
+      if (!students.length) return `<div class="empty-state"><i class="fas fa-search"></i><p>لا توجد نتائج</p></div>`;
+      
+      return students.map(s => {
+        // جلب اشتراكات هذا الطالب
+        const studentEnrollments = allEnrollments.filter(e => e.studentId === s.id);
+        const courseCount = studentEnrollments.length;
+        
+        // جلب أسماء الكورسات التي اشترك فيها الطالب
+        const courseNames = studentEnrollments
+          .map(e => getCourseName(e.courseId))
+          .filter(name => name !== 'كورس غير معروف');
+        
+        // عرض أول 2 كورس كمعاينة
+        const previewText = courseCount > 0 
+          ? courseNames.slice(0, 2).join('، ') + (courseCount > 2 ? ` ... (+${courseCount - 2})` : '')
+          : 'غير مشترك في أي كورس';
+
+        return `
+          <div class="user-card" onclick="openStudentModal('${s.id}')">
+            <div class="user-header">
+              <div class="user-avatar student">${getInitials(s.name)}</div>
+              <div class="user-info">
+                <div class="user-name">${escapeHtml(s.name)}</div>
+                <div class="user-email">${escapeHtml(s.email)}</div>
+              </div>
+              <span class="user-role student-role">🎓 طالب</span>
+            </div>
+            <div class="user-preview">
+              <i class="fas fa-book-open"></i> 
+              ${courseCount} كورس مشترك
+              ${courseCount > 0 ? `: ${escapeHtml(previewText)}` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.openStudentModal = function(studentId) {
+      const student = allStudents.find(s => s.id === studentId);
+      if (!student) return;
+      
+      currentModalItemId = studentId;
+      currentModalType = 'student';
+      
+      // جلب الاشتراكات الخاصة بالطالب
+      const studentEnrollments = allEnrollments.filter(e => e.studentId === studentId);
+      const courseIds = studentEnrollments.map(e => e.courseId);
+      
+      // جلب الكورسات الكاملة مع التفاصيل
+      const studentCourses = allCourses.filter(c => courseIds.includes(c.id));
+      
+      modalTitle.innerHTML = `<i class="fas fa-user-graduate"></i> ${escapeHtml(student.name)}`;
+      
+      let coursesHTML = '';
+      if (studentCourses.length > 0) {
+        coursesHTML = studentCourses.map(c => {
+          const teacherName = getTeacherName(c.teacherId);
+          return `
+            <div class="course-item">
+              <span class="c-title">${escapeHtml(c.title)}</span>
+              <span class="c-meta">
+                <i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(teacherName)}
+              </span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        coursesHTML = '<div class="no-courses">غير مشترك في أي كورس</div>';
+      }
+
+      modalBody.innerHTML = `
+        <div class="info-row"><span class="label">📧 الإيميل:</span><span class="value">${escapeHtml(student.email)}</span></div>
+        <div class="info-row"><span class="label">🎓 الدور:</span><span class="value">طالب</span></div>
+        <div class="info-row"><span class="label">📚 عدد الكورسات:</span><span class="value">${studentCourses.length} كورس</span></div>
+        <div class="courses-section">
+          <div class="section-title"><i class="fas fa-book-open"></i> الكورسات المشترك فيها (${studentCourses.length})</div>
+          ${coursesHTML}
+        </div>
+      `;
+      
+      modalDeleteBtn.dataset.id = studentId;
+      modalDeleteBtn.dataset.type = 'student';
+      modalDeleteBtn.style.display = 'flex';
+      modal.classList.add('open');
+    };
+
+    // ===== حذف المدرس / الطالب =====
+    modalDeleteBtn.addEventListener('click', async function(e) {
+      const id = this.dataset.id;
+      const type = this.dataset.type;
+      if (!id || type === 'course') return;
+
+      if (!confirm(`هل أنت متأكد من حذف ${type === 'teacher' ? 'المدرس' : 'الطالب'} نهائياً؟`)) return;
+
+      this.disabled = true;
+      this.innerHTML = 'جاري الحذف...';
+
+      try {
+        await db.collection('users').doc(id).delete();
+
+        if (type === 'teacher') {
+          const teacherCourses = allCourses.filter(c => c.teacherId === id);
+          for (const c of teacherCourses) {
+            await db.collection('courses').doc(c.id).delete();
+            const enrolls = allEnrollments.filter(e => e.courseId === c.id);
+            for (const e of enrolls) await db.collection('enrollments').doc(e.id).delete();
+          }
+          allTeachers = allTeachers.filter(t => t.id !== id);
+          allCourses = allCourses.filter(c => c.teacherId !== id);
+          allEnrollments = allEnrollments.filter(e => allCourses.some(c => c.id === e.courseId));
+          renderTeachersPage();
+        } else if (type === 'student') {
+          const studentEnrolls = allEnrollments.filter(e => e.studentId === id);
+          for (const e of studentEnrolls) await db.collection('enrollments').doc(e.id).delete();
+          allStudents = allStudents.filter(s => s.id !== id);
+          allEnrollments = allEnrollments.filter(e => e.studentId !== id);
+          renderStudentsPage();
+        }
+
+        showToast(`✅ تم حذف ${type === 'teacher' ? 'المدرس' : 'الطالب'} بنجاح`);
+        closeModal();
+      } catch (err) {
+        showToast('❌ خطأ في الحذف: ' + err.message, true);
+      } finally {
+        this.disabled = false;
+        this.innerHTML = '<i class="fas fa-trash-alt"></i> حذف';
+      }
+    });
+
+    // ===== ربط الروابط =====
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = link.dataset.page;
+        if (page) switchPage(page);
+      });
+    });
+
+    // ===== بدء التطبيق =====
+    loadAllData();
+  </script>
+</body>
+</html>

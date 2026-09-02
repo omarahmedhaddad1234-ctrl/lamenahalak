@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>السادس الابتدائي  | لميناهالك</title>
+    <link rel="icon" href="./images/logo.png" type="image/jpeg" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Segoe UI', sans-serif;
+            background: #f0f7fe;
+            color: #0b2a4a;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0b2a4a, #1a4a7a);
+            color: #fff;
+            padding: 30px 18px 30px;
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-shadow: 4px 0 30px rgba(0, 0, 0, 0.15);
+            transition: 0.3s;
+            z-index: 100;
+        }
+
+        .sidebar .profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar .profile .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 3rem;
+            color: #1a4a7a;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .sidebar .profile .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar .profile .name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .sidebar .profile .role {
+            font-size: 0.85rem;
+            color: #b0cce0;
+            margin-top: 2px;
+        }
+
+        .sidebar .nav-section {
+            margin-top: 8px;
+        }
+
+        .sidebar .nav-section .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8ab0d0;
+            margin: 20px 0 10px 8px;
+            font-weight: 700;
+        }
+
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #cde0ed;
+            text-decoration: none;
+            transition: 0.25s;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 2px;
+            border: 1px solid transparent;
+        }
+
+        .sidebar .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            color: #8ab0d0;
+            transition: 0.2s;
+        }
+
+        .sidebar .nav-item:hover i {
+            color: #ffb347;
+        }
+
+        .sidebar .nav-item.active {
+            background: rgba(255, 180, 60, 0.15);
+            color: #fff;
+            border-color: rgba(255, 180, 60, 0.2);
+        }
+
+        .sidebar .nav-item.active i {
+            color: #ffb347;
+        }
+
+        .sidebar .support-link {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 20px;
+        }
+
+        .sidebar .support-link .nav-item {
+            background: rgba(255, 180, 60, 0.1);
+            border: 1px solid rgba(255, 180, 60, 0.15);
+        }
+
+        .sidebar .support-link .nav-item:hover {
+            background: rgba(255, 180, 60, 0.2);
+            border-color: #ffb347;
+        }
+        .sidebar .support-link .badge {
+            margin-right: auto;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #b0cce0;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 30px 35px 50px;
+            max-width: calc(100% - 280px);
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .main-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0b2a4a;
+        }
+
+        .main-header h1 span {
+            color: #ffb347;
+        }
+
+        .main-header .breadcrumb {
+            color: #5a7a9a;
+            font-weight: 500;
+            background: #fff;
+            padding: 8px 22px;
+            border-radius: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e8edf2;
+        }
+
+        /* ===== Search & Sort & Filter Bar ===== */
+        .tools-bar {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 26px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
+            color: #8ab0d0;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 46px 12px 18px;
+            border-radius: 40px;
+            border: 1px solid #e2edf2;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+            color: #0b2a4a;
+        }
+
+        .search-box input:focus {
+            border-color: #ffb347;
+            box-shadow: 0 4px 14px rgba(255, 179, 71, 0.15);
+        }
+
+        .sort-select {
+            padding: 12px 18px;
+            border-radius: 40px;
+            border: 1px solid #e2edf2;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #3d5a78;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid #e2edf2;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #3d5a78;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #f0f7fe;
+            border-color: #b0cce0;
+        }
+
+        .filter-btn.active {
+            background: #0b2a4a;
+            color: #fff;
+            border-color: #0b2a4a;
+        }
+
+        .filter-btn.active:hover {
+            background: #1a4a7a;
+        }
+
+        .results-count {
+            color: #5a7a9a;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        /* ===== Courses Grid ===== */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .course-card {
+            background: #fff;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.35s cubic-bezier(0.15, 0.75, 0.4, 1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(11, 42, 74, 0.08);
+            border-color: #ffb34760;
+        }
+
+        .course-card .course-img {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(145deg, #eef6ff, #dce8f8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #1a4a7a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card .course-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-card .course-img .img-label {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(11, 42, 74, 0.85);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .course-card .course-img .price-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ffb347;
+            color: #0b2a4a;
+            font-size: 0.8rem;
+            padding: 5px 16px;
+            border-radius: 40px;
+            font-weight: 800;
+        }
+
+        .course-card .course-body {
+            padding: 20px 20px 24px;
+        }
+
+        .course-card .course-body h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: #0b2a4a;
+        }
+
+        .course-card .course-body .teacher {
+            color: #5a7a9a;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .course-card .course-body .teacher i {
+            color: #ffb347;
+        }
+
+        .course-card .course-body .desc {
+            color: #5a7a9a;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+
+        .course-card .course-body .meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 0.78rem;
+            color: #6a8aaa;
+            margin-top: 8px;
+        }
+
+        .course-card .course-body .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0f7fe;
+            padding: 3px 14px;
+            border-radius: 40px;
+        }
+
+        .course-card .course-body .btn-enroll {
+            margin-top: 16px;
+            background: #0b2a4a;
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .course-card .course-body .btn-enroll:hover {
+            background: #ffb347;
+            color: #0b2a4a;
+        }
+
+        .course-card .course-body .btn-enroll:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 230px;
+                padding: 20px 12px;
+            }
+            .main-content {
+                padding: 20px 20px 40px;
+                max-width: calc(100% - 230px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                height: auto;
+                position: relative;
+                padding: 16px 16px 20px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
+            .sidebar .profile {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+                flex: 1;
+                min-width: 180px;
+            }
+            .sidebar .profile .avatar {
+                width: 56px;
+                height: 56px;
+                font-size: 2rem;
+                margin: 0;
+            }
+            .sidebar .profile .name {
+                font-size: 1rem;
+            }
+            .sidebar .profile .role {
+                font-size: 0.75rem;
+            }
+            .sidebar .nav-section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                margin: 0;
+            }
+            .sidebar .nav-section .section-title {
+                display: none;
+            }
+            .sidebar .nav-item {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+                gap: 8px;
+            }
+            .sidebar .nav-item i {
+                font-size: 0.9rem;
+            }
+            .sidebar .support-link {
+                margin-top: 0;
+                border-top: none;
+                padding-top: 0;
+            }
+            .main-content {
+                max-width: 100%;
+                padding: 20px 16px 40px;
+            }
+            .main-header h1 {
+                font-size: 1.5rem;
+            }
+            .courses-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 18px;
+            }
+            .filter-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .sidebar .profile .avatar {
+                width: 44px;
+                height: 44px;
+                font-size: 1.6rem;
+            }
+            .sidebar .nav-item {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+                gap: 6px;
+            }
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            .tools-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-buttons {
+                justify-content: center;
+            }
+        }
+
+        /* scroll */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #ffb347;
+            border-radius: 10px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* Custom Alert */
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            animation: fadeInScale 0.2s ease-out;
+            max-width: 90%;
+            direction: rtl;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.5);
+            border-top: 5px solid #ffb347;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Logout button */
+        .logout-btn {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+        }
+        .logout-btn:hover {
+            background: rgba(255, 70, 70, 0.2);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        .sidebar .profile .logout-container {
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Profile -->
+        <div class="profile">
+            <div class="avatar">
+                <img src="images/logo.jpg" alt="لميناهالك" />
+            </div>
+            <div class="name" id="studentName">...</div>
+            <div class="role" id="studentRole">جاري التحميل...</div>
+            <div class="logout-container">
+                <button class="logout-btn" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-section">
+            <div class="section-title">الكورسات</div>
+            <a class="nav-item active" onclick="resetFilters()">
+                <i class="fas fa-th-large"></i> كل الكورسات
+            </a>
+            <a class="nav-item" onclick="focusSearch()">
+                <i class="fas fa-search"></i> بحث بالاسم
+            </a>
+        </div>
+
+        <!-- Support -->
+        <div class="support-link">
+            <a class="nav-item" id="supportWaLink" href="#" target="_blank">
+                <i class="fab fa-whatsapp" style="color:#25D366;"></i> تواصل مع الدعم
+                <span class="badge">📞 01211493385</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <div class="main-header">
+            <h1>📚 <span>الكورسات</span> • سادسة ابتدائي</h1>
+            <div class="breadcrumb" id="gradeBreadcrumb">جاري التحميل...</div>
+        </div>
+
+        <!-- Search & Sort & Filter -->
+        <div class="tools-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="ابحث عن كورس بالاسم...">
+            </div>
+            <select class="sort-select" id="sortSelect">
+                <option value="name-asc">الاسم (أ - ي)</option>
+                <option value="name-desc">الاسم (ي - أ)</option>
+                <option value="newest">الأحدث أولاً</option>
+                <option value="price-asc">السعر: من الأقل للأعلى</option>
+                <option value="price-desc">السعر: من الأعلى للأقل</option>
+            </select>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">الكل</button>
+                <button class="filter-btn" data-filter="term1">الترم الأول</button>
+                <button class="filter-btn" data-filter="term2">الترم الثاني</button>
+                <button class="filter-btn" data-filter="general">عام</button>
+            </div>
+        </div>
+
+        <div class="results-count" id="resultsCount"></div>
+
+        <!-- Courses Grid -->
+        <div class="courses-grid" id="coursesGrid">
+            <!-- سيتم ملئها بواسطة JavaScript -->
+        </div>
+    </main>
+
+    <!-- ===== FIREBASE SDK ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // ========== FIREBASE CONFIG ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+            authDomain: "nemo-8d0c7.firebaseapp.com",
+            projectId: "nemo-8d0c7",
+            storageBucket: "nemo-8d0c7.firebasestorage.app",
+            messagingSenderId: "585101385202",
+            appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // ========== متغيرات عامة ==========
+        let currentUser = null;
+        let currentUserData = null;
+        let allCourses = [];
+        let teacherNamesCache = {};
+        let searchTerm = '';
+        let sortMode = 'name-asc';
+        let activeFilter = 'all';
+
+        const SUPPORT_PHONE = "201211493385";
+
+        // ========== دوال مساعدة ==========
+        function showLoading(show = true) {
+            let loader = document.querySelector('.loading-overlay');
+            if (show) {
+                if (loader) return;
+                const div = document.createElement('div');
+                div.className = 'loading-overlay';
+                div.innerHTML = '<div class="spinner"></div>';
+                document.body.appendChild(div);
+            } else {
+                if (loader) loader.remove();
+            }
+        }
+
+        function showCustomAlert(icon, title, message, callback) {
+            const oldAlert = document.querySelector(".custom-alert");
+            if (oldAlert) oldAlert.remove();
+
+            let bgColor, iconEmoji;
+            if (icon === "success") { bgColor = "linear-gradient(135deg, #0b2a4a, #1a4a7a)"; iconEmoji = "✅"; }
+            else if (icon === "warning") { bgColor = "linear-gradient(135deg, #f39c12, #e67e22)"; iconEmoji = "⚠️"; }
+            else if (icon === "error") { bgColor = "linear-gradient(135deg, #e74c3c, #c0392b)"; iconEmoji = "❌"; }
+            else { bgColor = "#0b2a4a"; iconEmoji = "ℹ️"; }
+
+            const alertDiv = document.createElement("div");
+            alertDiv.className = "custom-alert";
+            alertDiv.innerHTML = `
+                <div style="background: ${bgColor}; direction: rtl; text-align: center; padding: 1.5rem 2rem; border-radius: 1.5rem; color: white; box-shadow: 0 20px 45px -10px rgba(0,0,0,0.3); min-width: 300px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size: 2.5rem; margin-bottom: 8px;">${iconEmoji}</div>
+                    <h3 style="margin: 0 0 10px 0; font-weight: 700; font-size: 1.3rem;">${title}</h3>
+                    <p style="margin: 0; font-size: 0.95rem; opacity: 0.95; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+                    <div style="margin-top: 16px;"><button class="alert-close-btn" style="background: rgba(255,255,255,0.15); border: none; padding: 8px 28px; border-radius: 50px; color: white; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition:0.2s;">حسنًا</button></div>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            const closeBtn = alertDiv.querySelector(".alert-close-btn");
+            closeBtn.addEventListener("click", () => {
+                alertDiv.remove();
+                if (callback && typeof callback === "function") callback();
+            });
+        }
+
+        function getGradeName(gradeValue) {
+            const map = {
+                "primary4": "الصف الرابع الابتدائي",
+                "primary5": "الصف الخامس الابتدائي",
+                "primary6": "الصف السادس الابتدائي",
+                "prep1": "الصف الأول الإعدادي",
+                "prep2": "الصف الثاني الإعدادي",
+                "prep3": "الصف الثالث الإعدادي",
+                "secondary1": "الصف الأول الثانوي",
+                "secondary2": "الصف الثاني الثانوي",
+                "secondary3": "الصف الثالث الثانوي",
+                "primary1": "الصف الأول الابتدائي",
+                "primary2": "الصف الثاني الابتدائي",
+                "primary3": "الصف الثالث الابتدائي",
+                "course": "الكورس",
+                "teacher": "مدرس"
+            };
+            return map[gradeValue] || "طالب";
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        // ========== تسجيل الخروج ==========
+        function logoutUser() {
+            auth.signOut().then(() => {
+                sessionStorage.removeItem('loggedInUser');
+                window.location.href = '../index.html';
+            }).catch(error => {
+                console.error('خطأ في تسجيل الخروج:', error);
+                showCustomAlert('error', 'خطأ', 'حدث خطأ أثناء تسجيل الخروج');
+            });
+        }
+
+        // ========== جلب بيانات المستخدم من Firestore ==========
+        async function loadUserDataFromFirestore(uid) {
+            try {
+                const docRef = db.collection('users').doc(uid);
+                const docSnap = await docRef.get();
+
+                if (docSnap.exists) {
+                    currentUserData = docSnap.data();
+
+                    document.getElementById('studentName').textContent = currentUserData.name || currentUserData.username || 'طالب';
+
+                    const roleEl = document.getElementById('studentRole');
+                    const roleText = currentUserData.role === 'teacher' ? 'مدرس' : 'طالب';
+                    roleEl.textContent = `${roleText} • ${getGradeName(currentUserData.grade)}`;
+
+                    const breadcrumb = document.getElementById('gradeBreadcrumb');
+                    breadcrumb.textContent = getGradeName(currentUserData.grade);
+
+                    return true;
+                } else {
+                    console.warn('لا توجد بيانات للمستخدم في Firestore');
+                    return false;
+                }
+            } catch (error) {
+                console.error('خطأ في جلب بيانات المستخدم:', error);
+                return false;
+            }
+        }
+
+        // ========== التحقق من حالة المصادقة ==========
+        function checkAuthState() {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await loadUserDataFromFirestore(user.uid);
+                    fetchCourses();
+                } else {
+                    showCustomAlert('warning', 'تنبيه', '⚠️ يرجى تسجيل الدخول أولاً', () => {
+                        window.location.href = '../index.html';
+                    });
+                }
+            });
+        }
+
+        // ========== جلب اسم مدرس (مع كاش) ==========
+        async function getTeacherName(teacherId) {
+            if (!teacherId) return 'مدرس';
+            if (teacherNamesCache[teacherId]) return teacherNamesCache[teacherId];
+
+            try {
+                const doc = await db.collection('users').doc(teacherId).get();
+                const name = doc.exists ? (doc.data().name || 'مدرس') : 'مدرس';
+                teacherNamesCache[teacherId] = name;
+                return name;
+            } catch (e) {
+                return 'مدرس';
+            }
+        }
+
+        // ========== جلب كل الكورسات من Firebase ==========
+        async function fetchCourses() {
+            showLoading(true);
+            try {
+                const snapshot = await db.collection('courses').get();
+                allCourses = [];
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    allCourses.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+
+                // جلب أسماء المدرسين لكل الكورسات مرة واحدة
+                const uniqueTeacherIds = [...new Set(allCourses.map(c => c.teacherId).filter(Boolean))];
+                await Promise.all(uniqueTeacherIds.map(async (tid) => {
+                    await getTeacherName(tid);
+                }));
+
+                allCourses.forEach(c => {
+                    c.teacherName = teacherNamesCache[c.teacherId] || 'مدرس';
+                });
+
+                renderCourses();
+            } catch (error) {
+                console.error('خطأ في جلب الكورسات:', error);
+                showCustomAlert('error', 'خطأ', 'فشل في تحميل الكورسات. تأكد من الاتصال بالإنترنت.');
+                document.getElementById('coursesGrid').innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:#5a7a9a; background:#fff; border-radius:28px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#e74c3c; display:block; margin-bottom:16px;"></i>
+                        <p style="font-size:1.2rem; font-weight:600;">حدث خطأ في تحميل الكورسات</p>
+                        <p style="color:#8ab0d0;">يرجى المحاولة مرة أخرى</p>
+                        <button onclick="fetchCourses()" style="margin-top:15px; background:#0b2a4a; color:#fff; border:none; padding:10px 30px; border-radius:40px; cursor:pointer; font-weight:600;">إعادة المحاولة</button>
+                    </div>
+                `;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ========== فلترة + بحث + ترتيب ==========
+        function getFilteredSortedCourses() {
+            let list = [...allCourses];
+
+            if (activeFilter !== 'all') {
+                list = list.filter(c => c.term === activeFilter);
+            }
+
+            if (searchTerm.trim()) {
+                const term = searchTerm.trim().toLowerCase();
+                list = list.filter(c => (c.title || '').toLowerCase().includes(term));
+            }
+
+            switch (sortMode) {
+                case 'name-asc':
+                    list.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ar'));
+                    break;
+                case 'name-desc':
+                    list.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'ar'));
+                    break;
+                case 'price-asc':
+                    list.sort((a, b) => (a.price || 0) - (b.price || 0));
+                    break;
+                case 'price-desc':
+                    list.sort((a, b) => (b.price || 0) - (a.price || 0));
+                    break;
+                case 'newest':
+                    list.sort((a, b) => {
+                        const aTime = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                        const bTime = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                        return bTime - aTime;
+                    });
+                    break;
+            }
+
+            return list;
+        }
+
+        // ========== عرض الكورسات ==========
+        function renderCourses() {
+            const grid = document.getElementById('coursesGrid');
+            const filtered = getFilteredSortedCourses();
+
+            document.getElementById('resultsCount').textContent =
+                `عدد الكورسات: ${filtered.length} من إجمالي ${allCourses.length}`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:#5a7a9a; background:#fff; border-radius:28px;">
+                        <i class="fas fa-book-open" style="font-size:3rem; color:#b0cce0; display:block; margin-bottom:16px;"></i>
+                        <p style="font-size:1.2rem; font-weight:600;">لا توجد كورسات مطابقة</p>
+                        <p style="color:#8ab0d0;">جرب كلمة بحث مختلفة أو تغيير الفلتر</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(course => {
+                const imageBlock = course.imageUrl                    ? `<img src="${course.imageUrl}" alt="${escapeHtml(course.title)}">`
+                    : `<span style="font-size:3.5rem;">📚</span>`;
+
+                const termMap = {
+                    'term1': 'الترم الأول',
+                    'term2': 'الترم الثاني',
+                    'general': 'عام'
+                };
+                const termDisplay = termMap[course.term] || course.term || '';
+
+                return `
+                <div class="course-card" data-id="${course.id}">
+                    <div class="course-img">
+                        ${imageBlock}
+                        <span class="price-tag">${course.price != null ? course.price + ' ج.م' : 'مجاني'}</span>
+                        <span class="img-label">${course.totalLessons || 0} درس</span>
+                        ${termDisplay ? `<span class="img-label" style="left:auto; right:12px; background:rgba(255,180,60,0.9); color:#0b2a4a;">${termDisplay}</span>` : ''}
+                    </div>
+                    <div class="course-body">
+                        <h3>${escapeHtml(course.title || 'بدون اسم')}</h3>
+                        <div class="teacher">
+                            <i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(course.teacherName || 'مدرس')}
+                        </div>
+                        <p class="desc">${escapeHtml(course.description || '')}</p>
+                        <div class="meta">
+                            <span><i class="fas fa-users"></i> ${course.students || 0} طالب</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${course.startDate || '—'}</span>
+                            <span><i class="fas fa-calendar-check"></i> ${course.endDate || '—'}</span>
+                        </div>
+                        <button class="btn-enroll" onclick="goToLesson('${course.id}')">
+                            <i class="fas fa-eye"></i> عرض الكورس
+                        </button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // ========== الانتقال لصفحة الكورس (lesson.html) ==========
+        function goToLesson(courseId) {
+            window.location.href = `lesson.html?courseId=${courseId}`;
+        }
+
+        // ========== دوال البحث والفلاتر ==========
+        function resetFilters() {
+            searchTerm = '';
+            sortMode = 'name-asc';
+            activeFilter = 'all';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'name-asc';
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === 'all');
+            });
+            renderCourses();
+        }
+
+        function focusSearch() {
+            document.getElementById('searchInput').focus();
+        }
+
+        // ========== Event Listeners ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            const supportLink = document.getElementById('supportWaLink');
+            if (supportLink) supportLink.href = `https://wa.me/${SUPPORT_PHONE}`;
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                renderCourses();
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                sortMode = e.target.value;
+                renderCourses();
+            });
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    activeFilter = this.dataset.filter;
+                    renderCourses();
+                });
+            });
+
+            checkAuthState();
+        });
+
+        // ========== دوال عامة ==========
+        window.goToLesson = goToLesson;
+        window.fetchCourses = fetchCourses;
+        window.logoutUser = logoutUser;
+        window.resetFilters = resetFilters;
+        window.focusSearch = focusSearch;
+
+        console.log('🚀 منصة لميناهالك • سادسة ابتدائي');
+        console.log('📞 رقم الدعم: 01211493385');
+    </script>
+
+</body>
+</html>

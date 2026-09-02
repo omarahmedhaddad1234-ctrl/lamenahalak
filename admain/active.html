@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة تفعيل الطلاب |  لميناهالك</title>
+<link rel="icon" href="./images/logo.png" type="image/jpeg" />
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root{
+    --primary:#2c4b64;
+    --primary-dark:#1e3a4d;
+    --bg:#eef4f9;
+    --card:#ffffff;
+    --text:#1a2c3e;
+    --muted:#6b7280;
+    --success:#16a34a;
+    --danger:#e74c3c;
+    --warning:#f59e0b;
+    --border:#e2edf2;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+  }
+
+  header.topbar{
+    background:linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color:#fff;
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 20px rgba(0,0,0,0.1);
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  header.topbar .title{
+    font-size:1.3rem;
+    font-weight:800;
+  }
+  header.topbar .title span{ color:#ffb347; }
+  .logout-btn{
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.2);
+    color:#fff;
+    padding:8px 20px;
+    border-radius:40px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+  .logout-btn:hover{ background:rgba(255,70,70,0.25); }
+
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:30px 20px 60px;
+  }
+
+  .search-bar{
+    display:flex;
+    gap:12px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+  .search-bar input{
+    flex:1;
+    min-width:220px;
+    padding:12px 18px;
+    border-radius:40px;
+    border:1.5px solid var(--border);
+    font-size:0.95rem;
+    outline:none;
+    background:#fff;
+  }
+  .search-bar input:focus{ border-color:var(--primary); }
+  .search-bar .count-pill{
+    background:#fff;
+    border:1px solid var(--border);
+    padding:10px 20px;
+    border-radius:40px;
+    font-size:0.85rem;
+    font-weight:700;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+  }
+
+  .students-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .student-card{
+    background:var(--card);
+    border-radius:18px;
+    padding:18px 22px;
+    border:1px solid var(--border);
+    box-shadow:0 4px 16px rgba(0,0,0,0.03);
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .student-card .avatar{
+    width:48px; height:48px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:1.1rem;
+    flex-shrink:0;
+  }
+  .student-card .info{
+    flex:1;
+    min-width:180px;
+  }
+  .student-card .info .name{
+    font-weight:800;
+    font-size:1rem;
+    margin-bottom:2px;
+  }
+  .student-card .info .email{
+    font-size:0.82rem;
+    color:var(--muted);
+  }
+  .student-card .info .grade{
+    font-size:0.78rem;
+    color:var(--primary);
+    font-weight:700;
+    margin-top:3px;
+  }
+  .student-card .active-count{
+    font-size:0.78rem;
+    color:var(--success);
+    font-weight:700;
+    background:#e8f8ee;
+    padding:4px 12px;
+    border-radius:40px;
+    white-space:nowrap;
+  }
+  .student-card .actions{
+    display:flex;
+    gap:10px;
+  }
+  .btn-activate, .btn-deactivate{
+    border:none;
+    padding:9px 18px;
+    border-radius:40px;
+    font-size:0.82rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.2s;
+    white-space:nowrap;
+  }
+  .btn-activate{ background:#e8f8ee; color:var(--success); }
+  .btn-activate:hover{ background:var(--success); color:#fff; }
+  .btn-deactivate{ background:#fdeaea; color:var(--danger); }
+  .btn-deactivate:hover{ background:var(--danger); color:#fff; }
+
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--muted);
+    background:#fff;
+    border-radius:18px;
+    border:1px dashed var(--border);
+  }
+
+  /* ===== Modal ===== */
+  .modal-overlay{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(26,44,62,0.55);
+    backdrop-filter:blur(3px);
+    z-index:9998;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-box{
+    background:#fff;
+    border-radius:22px;
+    max-width:440px;
+    width:100%;
+    max-height:80vh;
+    overflow-y:auto;
+    padding:24px 24px 26px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.25);
+  }
+  .modal-box h3{
+    font-size:1.15rem;
+    font-weight:800;
+    margin-bottom:4px;
+  }
+  .modal-box .sub{
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-bottom:16px;
+  }
+  .course-option{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border:1.5px solid var(--border);
+    border-radius:14px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition:0.2s;
+  }
+  .course-option:hover{ border-color:var(--primary); background:#f8fafc; }
+  .course-option.selected{
+    border-color:var(--primary);
+    background:#eef4f9;
+  }
+  .course-option .radio-dot{
+    width:18px; height:18px;
+    border-radius:50%;
+    border:2px solid var(--border);
+    flex-shrink:0;
+    position:relative;
+  }
+  .course-option.selected .radio-dot{ border-color:var(--primary); }
+  .course-option.selected .radio-dot::after{
+    content:'';
+    position:absolute;
+    top:3px; left:3px;
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--primary);
+  }
+  .course-option .c-title{ font-weight:700; font-size:0.9rem; }
+  .course-option .c-price{ font-size:0.75rem; color:var(--muted); margin-right:auto; }
+
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  }
+  .modal-actions button{
+    flex:1;
+    padding:11px;
+    border-radius:14px;
+    border:none;
+    font-weight:700;
+    font-size:0.9rem;
+    cursor:pointer;
+  }
+  .btn-confirm{ background:var(--primary); color:#fff; }
+  .btn-confirm:hover{ background:var(--primary-dark); }
+  .btn-confirm:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-cancel{ background:#f1f5f9; color:var(--text); }
+  .btn-cancel:hover{ background:#e2e8f0; }
+
+  .modal-empty{
+    text-align:center;
+    padding:20px;
+    color:var(--muted);
+    font-size:0.9rem;
+  }
+
+  /* Loading / alert */
+  .loading-overlay{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.3);
+    backdrop-filter:blur(3px);
+    z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .spinner{
+    width:50px; height:50px;
+    border:5px solid rgba(255,255,255,0.5);
+    border-top:5px solid var(--primary);
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{ 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+
+  .custom-alert{
+    position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    z-index:10000;
+    max-width:90%;
+    animation:fadeInScale 0.2s ease-out;
+  }
+  @keyframes fadeInScale{
+    from{ opacity:0; transform:translate(-50%,-50%) scale(0.9); }
+    to{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
+
+  @media (max-width:600px){
+    .student-card{ flex-direction:column; align-items:stretch; text-align:center; }
+    .student-card .actions{ justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="title">nemo <span>👑 لوحة الأدمن</span></div>
+    <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+  </header>
+
+  <main>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث بالاسم أو الإيميل...">
+      <div class="count-pill" id="resultsCount">0 طالب</div>
+    </div>
+
+    <div class="students-list" id="studentsList">
+      <div class="empty-state">جارِ تحميل الطلاب...</div>
+    </div>
+  </main>
+
+<script>
+  // =========== Firebase Config ===========
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQ8LFihzOPueW0_FCgRF6uEiAMgn24sF8",
+    authDomain: "nemo-8d0c7.firebaseapp.com",
+    projectId: "nemo-8d0c7",
+    storageBucket: "nemo-8d0c7.firebasestorage.app",
+    messagingSenderId: "585101385202",
+    appId: "1:585101385202:web:fb703a536893fb4aaadf6b"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // ❌ تم إزالة التحقق من الإيميل - أي حد يقدر يدخل
+
+  let allStudents = [];
+  let allCourses = [];
+  let studentEnrollmentsCache = {};
+  let searchTerm = '';
+  let selectedCourseId = null;
+
+  // ===== دوال مساعدة =====
+  function showLoading(show = true) {
+    let loader = document.querySelector('.loading-overlay');
+    if (show) {
+      if (loader) return;
+      const div = document.createElement('div');
+      div.className = 'loading-overlay';
+      div.innerHTML = '<div class="spinner"></div>';
+      document.body.appendChild(div);
+    } else {
+      if (loader) loader.remove();
+    }
+  }
+
+  function showCustomAlert(icon, title, message, callback) {
+    const oldAlert = document.querySelector(".custom-alert");
+    if (oldAlert) oldAlert.remove();
+
+    let bgColor, iconEmoji;
+    if (icon === "success") { bgColor = "linear-gradient(135deg, #2c4b64, #1e3a4d)"; iconEmoji = "✅"; }
+    else if (icon === "warning") { bgColor = "linear-gradient(135deg, #f39c12, #e67e22)"; iconEmoji = "⚠️"; }
+    else if (icon === "error") { bgColor = "linear-gradient(135deg, #e74c3c, #c0392b)"; iconEmoji = "❌"; }
+    else { bgColor = "#2c4b64"; iconEmoji = "ℹ️"; }
+
+    const alertDiv = document.createElement("div");
+    alertDiv.className = "custom-alert";
+    alertDiv.innerHTML = `
+      <div style="background:${bgColor}; direction:rtl; text-align:center; padding:1rem 1.5rem; border-radius:1.2rem; color:white; box-shadow:0 20px 35px -10px rgba(0,0,0,0.2); min-width:280px;">
+        <div style="font-size:2rem; margin-bottom:6px;">${iconEmoji}</div>
+        <h3 style="margin:0 0 8px 0; font-weight:600;">${title}</h3>
+        <p style="margin:0; font-size:0.85rem; opacity:0.95; white-space:pre-wrap;">${message}</p>
+        <div style="margin-top:12px;"><button class="alert-close-btn" style="background:rgba(255,255,255,0.2); border:none; padding:5px 14px; border-radius:50px; color:white; cursor:pointer; font-weight:500;">حسنًا</button></div>
+      </div>
+    `;
+    document.body.appendChild(alertDiv);
+    alertDiv.querySelector(".alert-close-btn").addEventListener("click", () => {
+      alertDiv.remove();
+      if (callback) callback();
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function getGradeName(gradeValue) {
+    const map = {
+      "primary4": "الرابع الابتدائي", "primary5": "الخامس الابتدائي", "primary6": "السادس الابتدائي",
+      "prep1": "الأول الإعدادي", "prep2": "الثاني الإعدادي", "prep3": "الثالث الإعدادي",
+      "secondary1": "الأول الثانوي", "secondary2": "الثاني الثانوي", "secondary3": "الثالث الثانوي"
+    };
+    return map[gradeValue] || "طالب";
+  }
+
+  // ===== تحميل البيانات =====
+  showLoading(true);
+
+  async function loadData() {
+    try {
+      await loadCourses();
+      await loadStudents();
+      showLoading(false);
+    } catch (err) {
+      console.error(err);
+      showLoading(false);
+      showCustomAlert('error', 'خطأ', 'حصل خطأ أثناء تحميل البيانات: ' + err.message);
+    }
+  }
+
+  // ===== تحميل كل الكورسات =====
+  async function loadCourses() {
+    const snapshot = await db.collection("courses").get();
+    allCourses = [];
+    snapshot.forEach(doc => allCourses.push({ id: doc.id, ...doc.data() }));
+  }
+
+  // ===== تحميل كل الطلاب =====
+  async function loadStudents() {
+    const snapshot = await db.collection("users")
+      .where("role", "==", "student")
+      .get();
+
+    allStudents = [];
+    snapshot.forEach(doc => allStudents.push({ id: doc.id, ...doc.data() }));
+
+    renderStudents();
+  }
+
+  // ===== فلترة الطلاب بالبحث =====
+  function getFilteredStudents() {
+    if (!searchTerm.trim()) return allStudents;
+    const term = searchTerm.trim().toLowerCase();
+    return allStudents.filter(s =>
+      (s.name || '').toLowerCase().includes(term) ||
+      (s.username || '').toLowerCase().includes(term) ||
+      (s.email || '').toLowerCase().includes(term)
+    );
+  }
+
+  // ===== عرض قائمة الطلاب =====
+  async function renderStudents() {
+    const list = document.getElementById('studentsList');
+    const filtered = getFilteredStudents();
+
+    document.getElementById('resultsCount').textContent = `${filtered.length} طالب`;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">لا يوجد طلاب مطابقين للبحث</div>`;
+      return;
+    }
+
+    const rows = await Promise.all(filtered.map(async (student) => {
+      const enrollments = await getStudentEnrollments(student.id);
+      const initial = (student.name || student.username || 'ط').trim().charAt(0);
+
+      return `
+        <div class="student-card" data-id="${student.id}">
+          <div class="avatar">${escapeHtml(initial)}</div>
+          <div class="info">
+            <div class="name">${escapeHtml(student.name || student.username || 'بدون اسم')}</div>
+            <div class="email">${escapeHtml(student.email || '')}</div>
+            <div class="grade">${getGradeName(student.grade)}</div>
+          </div>
+          <div class="active-count">${enrollments.length} كورس مفعل</div>
+          <div class="actions">
+            <button class="btn-activate" onclick="openActivateModal('${student.id}')">✅ تفعيل في كورس</button>
+            <button class="btn-deactivate" onclick="openDeactivateModal('${student.id}')">❌ إلغاء تفعيل</button>
+          </div>
+        </div>
+      `;
+    }));
+
+    list.innerHTML = rows.join('');
+  }
+
+  // ===== جلب اشتراكات الطالب (مع كاش) =====
+  async function getStudentEnrollments(studentId, forceRefresh = false) {
+    if (!forceRefresh && studentEnrollmentsCache[studentId]) {
+      return studentEnrollmentsCache[studentId];
+    }
+
+    const snapshot = await db.collection("enrollments")
+      .where("userId", "==", studentId)
+      .get();
+
+    const courseMap = {};
+    allCourses.forEach(c => courseMap[c.id] = c.title || 'بدون اسم');
+
+    const result = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      result.push({
+        enrollmentId: doc.id,
+        courseId: data.courseId,
+        courseTitle: courseMap[data.courseId] || 'كورس محذوف'
+      });
+    });
+
+    studentEnrollmentsCache[studentId] = result;
+    return result;
+  }
+
+  // ===== مودال التفعيل =====
+  window.openActivateModal = async function(studentId) {
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student) return;
+
+    selectedCourseId = null;
+    const enrolledIds = new Set((studentEnrollmentsCache[studentId] || []).map(e => e.courseId));
+
+    const optionsHtml = allCourses.length === 0
+      ? `<div class="modal-empty">لا يوجد أي كورسات في المنصة بعد</div>`
+      : allCourses.map(c => {
+          const already = enrolledIds.has(c.id);
+          return `
+            <div class="course-option ${already ? '' : ''}" style="${already ? 'opacity:0.5; cursor:not-allowed;' : ''}"
+                 onclick="${already ? '' : `selectCourseOption('${c.id}', this)`}">
+              <div class="radio-dot"></div>
+              <div class="c-title">${escapeHtml(c.title || 'بدون اسم')}</div>
+              <div class="c-price">${already ? 'مفعل بالفعل' : (c.price != null ? c.price + ' ج.م' : 'مجاني')}</div>
+            </div>
+          `;
+        }).join('');
+
+    showModal({
+      title: '✅ تفعيل الطالب في كورس',
+      subtitle: `${student.name || student.username} — اختر الكورس اللي عايز تفعّله فيه`,
+      optionsHtml,
+      confirmText: 'تفعيل',
+      onConfirm: async () => {
+        if (!selectedCourseId) return;
+        await activateStudent(studentId, selectedCourseId);
+      }
+    });
+  };
+
+  // ===== مودال إلغاء التفعيل =====
+  window.openDeactivateModal = async function(studentId) {
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student) return;
+
+    selectedCourseId = null;
+    const enrollments = await getStudentEnrollments(studentId, true);
+
+    const optionsHtml = enrollments.length === 0
+      ? `<div class="modal-empty">الطالب ده مش مفعّل في أي كورس حاليًا</div>`
+      : enrollments.map(e => `
+          <div class="course-option" onclick="selectCourseOption('${e.courseId}', this, '${e.enrollmentId}')">
+            <div class="radio-dot"></div>
+            <div class="c-title">${escapeHtml(e.courseTitle)}</div>
+          </div>
+        `).join('');
+
+    showModal({
+      title: '❌ إلغاء تفعيل الطالب',
+      subtitle: `${student.name || student.username} — اختر الكورس اللي عايز تلغي التفعيل فيه`,
+      optionsHtml,
+      confirmText: 'إلغاء التفعيل',
+      danger: true,
+      onConfirm: async () => {
+        if (!selectedCourseId) return;
+        const enrollment = enrollments.find(e => e.courseId === selectedCourseId);
+        if (!enrollment) return;
+        await deactivateStudent(studentId, enrollment.enrollmentId);
+      }
+    });
+  };
+
+  // ===== اختيار كورس جوه المودال =====
+  window.selectCourseOption = function(courseId, el) {
+    selectedCourseId = courseId;
+    document.querySelectorAll('.course-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    const confirmBtn = document.querySelector('.btn-confirm');
+    if (confirmBtn) confirmBtn.disabled = false;
+  };
+
+  // ===== إظهار المودال =====
+  function showModal({ title, subtitle, optionsHtml, confirmText, danger, onConfirm }) {
+    const old = document.querySelector('.modal-overlay');
+    if (old) old.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>${title}</h3>
+        <div class="sub">${escapeHtml(subtitle)}</div>
+        <div id="modalOptions">${optionsHtml}</div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="modalCancelBtn">إلغاء</button>
+          <button class="btn-confirm" id="modalConfirmBtn" disabled style="${danger ? 'background:#e74c3c;' : ''}">${confirmText}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+    document.getElementById('modalConfirmBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('modalConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'جارِ التنفيذ...';
+      await onConfirm();
+    });
+  }
+
+  function closeModal() {
+    const overlay = document.querySelector('.modal-overlay');
+    if (overlay) overlay.remove();
+    selectedCourseId = null;
+  }
+
+  // ===== تنفيذ التفعيل =====
+  async function activateStudent(studentId, courseId) {
+    showLoading(true);
+    try {
+      await db.collection("enrollments").add({
+        userId: studentId,
+        courseId: courseId,
+        status: "active",
+        activatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      delete studentEnrollmentsCache[studentId];
+      closeModal();
+      showLoading(false);
+      showCustomAlert('success', '✅ تم التفعيل', 'تم تفعيل الطالب في الكورس بنجاح');
+      await renderStudents();
+    } catch (err) {
+      showLoading(false);
+      showCustomAlert('error', 'خطأ', 'فشل التفعيل: ' + err.message);
+    }
+  }
+
+  // ===== تنفيذ إلغاء التفعيل =====
+  async function deactivateStudent(studentId, enrollmentId) {
+    showLoading(true);
+    try {
+      await db.collection("enrollments").doc(enrollmentId).delete();
+
+      delete studentEnrollmentsCache[studentId];
+      closeModal();
+      showLoading(false);
+      showCustomAlert('success', '✅ تم', 'تم إلغاء تفعيل الطالب في الكورس');
+      await renderStudents();
+    } catch (err) {
+      showLoading(false);
+      showCustomAlert('error', 'خطأ', 'فشل إلغاء التفعيل: ' + err.message);
+    }
+  }
+
+  // ===== البحث =====
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    renderStudents();
+  });
+
+  // ===== تسجيل الخروج =====
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    auth.signOut().then(() => {
+      sessionStorage.removeItem("adminLoggedIn");
+      window.location.href = "../index.html";
+    });
+  });
+
+  // ===== تشغيل التحميل =====
+  loadData();
+</script>
+
+</body>
+</html>
