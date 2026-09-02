@@ -851,12 +851,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="directUrl">🔗 رابط مباشر (يوتيوب / جوجل درايف / أي رابط)</label>
+                    <label for="directUrl">🔗 رابط (Google Meet، Zoom، Teams، YouTube، Drive، أو أي رابط)</label>
                     <div class="url-row">
-                        <input type="url" id="directUrl" placeholder="https://www.youtube.com/watch?v=..." />
-                        <button type="button" class="btn-convert" id="convertDriveBtn">🔄 تحويل Drive</button>
+                        <input type="text" id="directUrl" placeholder="https://meet.google.com/... أو https://zoom.us/... أو أي رابط" />
+                        <button type="button" class="btn-convert" id="convertDriveBtn">🔄 تحويل الرابط</button>
                     </div>
-                    <div class="hint">لو حطيت رابط هنا، هيتم تجاهل أي ملف تختاره تحت.</div>
+                    <div class="hint">📌 أي رابط عادي (Google Meet، Zoom، Teams، YouTube، Drive، أو أي رابط تاني). لو حطيت رابط، هيتم تجاهل الملف اللي تختاره تحت.</div>
                 </div>
 
                 <div class="form-group">
@@ -1045,12 +1045,15 @@
 
         function convertGoogleDriveUrl(url) {
             if (!url) return '';
-            let match = url.match(/\/file\/d\/([^\/]+)/);
+            let cleaned = url.trim();
+            // لو الرابط بتاع درايف حوله لرابط مباشر
+            let match = cleaned.match(/\/file\/d\/([^\/]+)/);
             if (match && match[1]) return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-            if (url.includes('uc?export=download') || url.includes('uc?id=')) return url;
-            match = url.match(/\/d\/([^\/]+)\/preview/);
+            if (cleaned.includes('uc?export=download') || cleaned.includes('uc?id=')) return cleaned;
+            match = cleaned.match(/\/d\/([^\/]+)\/preview/);
             if (match && match[1]) return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-            return url;
+            // أي رابط تاني يرجع كما هو (ميت، زوم، تيمز، الخ)
+            return cleaned;
         }
 
         // ============================================================
@@ -1070,7 +1073,7 @@
         convertDriveBtn.addEventListener('click', () => {
             const raw = directUrlInput.value.trim();
             if (!raw) {
-                showAlert('warning', 'تنبيه', 'الرجاء إدخال رابط Google Drive أولاً');
+                showAlert('warning', 'تنبيه', 'الرجاء إدخال رابط أولاً');
                 return;
             }
             const converted = convertGoogleDriveUrl(raw);
@@ -1216,14 +1219,17 @@
                 return;
             }
             if (!directUrl && !file) {
-                showAlert('warning', 'تنبيه', 'لازم تحط رابط مباشر أو ترفع ملف');
+                showAlert('warning', 'تنبيه', 'لازم تحط رابط أو ترفع ملف');
                 return;
             }
 
             // Disable button
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
-            submitBtn.querySelector('span:not(.spinner-btn)').textContent = 'جاري الحفظ...';
+            const btnText = submitBtn.querySelector('span:not(.spinner-btn)');
+            if (btnText) {
+                btnText.textContent = 'جاري الحفظ...';
+            }
 
             try {
                 let finalMediaUrl = '';
@@ -1279,12 +1285,14 @@
 
             } catch (err) {
                 console.error('Save error:', err);
-                // Don't show Firebase errors to user, only generic message
                 showAlert('error', 'فشل', 'حدث خطأ أثناء حفظ المحتوى. حاول مرة أخرى.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('loading');
-                submitBtn.querySelector('span:not(.spinner-btn)').textContent = '💾 حفظ المحتوى';
+                const btnText = submitBtn.querySelector('span:not(.spinner-btn)');
+                if (btnText) {
+                    btnText.textContent = '💾 حفظ المحتوى';
+                }
             }
         });
 
